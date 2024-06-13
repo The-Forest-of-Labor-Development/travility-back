@@ -12,4 +12,5 @@ public class Member {
     Long id;
 
     String username;
+    String password;
 }
