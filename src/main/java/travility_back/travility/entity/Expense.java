@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 public class Expense {
-
+    //
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expense_id")
