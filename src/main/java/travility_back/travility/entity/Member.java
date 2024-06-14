@@ -1,15 +1,32 @@
 package travility_back.travility.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import travility_back.travility.entity.enums.Role;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Column(name = "member_id")
+    private Long id;
 
-    String username;
+    private String username;
+
+    private String password;
+
+    private String email;
+
+    private Date birth;
+
+    @Enumerated(EnumType.STRING)
+    private Role role; // 권한 [USER, ADMIN]
+
+    private Date createdDate; // 가입일자
+
+    @OneToMany(mappedBy = "member")
+    private List<AccountBook> accountBooks = new ArrayList<>();
 }
