@@ -31,7 +31,7 @@ public class Expense {
     private AccountBook accountBook; // 가계부
 
     @Enumerated(EnumType.STRING)
-    private PamentMethod pamentMethod; // 결제방법 [CARD, CASH]
+    private PamentMethod paymentMethod; // 결제방법 [CARD, CASH]
 
     @Enumerated(EnumType.STRING)
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]
