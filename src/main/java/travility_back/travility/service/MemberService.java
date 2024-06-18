@@ -26,7 +26,7 @@ public class MemberService {
     @Transactional
     public void signup(MemberDTO memberDTO){
         if (duplicateUsername(memberDTO.getUsername())){ //중복 확인
-            new IllegalArgumentException("Duplicate username");
+            throw new IllegalArgumentException("Duplicate username");
         }
         Member member = new Member();
         member.setUsername(memberDTO.getUsername());

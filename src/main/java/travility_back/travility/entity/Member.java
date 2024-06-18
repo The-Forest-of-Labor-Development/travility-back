@@ -27,7 +27,7 @@ public class Member {
 
     private String email;
 
-    private Date birth;
+    private String birth;
 
     @Enumerated(EnumType.STRING)
     private Role role; // 권한 [USER, ADMIN]
