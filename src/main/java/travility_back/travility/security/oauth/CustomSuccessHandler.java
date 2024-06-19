@@ -42,7 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 토큰 전달방법 : 쿠키 전달
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/"); // 프론트단
+        response.sendRedirect("http://localhost:3000/loading"); // 프론트단
     }
 
     // 쿠키 만드는 메서드

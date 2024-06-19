@@ -73,7 +73,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth)->auth
-                                .requestMatchers("/","/api/duplicate-username","/api/login","/api/signup").permitAll()
+                                .requestMatchers("/","/api/duplicate-username","/api/login", "/api/auth/social-jwt","/api/signup").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
