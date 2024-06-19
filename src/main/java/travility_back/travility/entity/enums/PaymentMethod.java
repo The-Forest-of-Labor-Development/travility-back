@@ -1,6 +1,6 @@
 package travility_back.travility.entity.enums;
 
-public enum PamentMethod {
+public enum PaymentMethod {
     CARD,
     CASH
 }

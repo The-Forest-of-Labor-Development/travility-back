@@ -1,6 +1,4 @@
-package travility_back.travility.response;
-
-import travility_back.travility.dto.OAuth2Response;
+package travility_back.travility.dto.oauth.response;
 
 import java.util.Map;
 

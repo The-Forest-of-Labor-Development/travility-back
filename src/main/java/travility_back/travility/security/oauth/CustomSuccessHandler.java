@@ -1,4 +1,4 @@
-package travility_back.travility.oauth;
+package travility_back.travility.security.oauth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -9,12 +9,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import travility_back.travility.dto.CustomOAuthUser;
-import travility_back.travility.entity.enums.Role;
-import travility_back.travility.jwt.JWTUtil;
+import travility_back.travility.dto.oauth.CustomOAuthUser;
+import travility_back.travility.security.jwt.JWTUtil;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
@@ -29,18 +29,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String username = customUserDetails.getUsername();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-        // Role 클래스로 권한을 설정해줬으니까 Role enum 타입으로 변환
-        Role role = null;
-        for (GrantedAuthority authority : authorities) {
-            System.out.println("authority.getAuthority().toString() = " + authority.getAuthority().toString()); // 삭제
-            if (authority.getAuthority().equals("ROLE_USER")) {
-                role = Role.USER;
-            } else if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                role = Role.ADMIN;
-            }
-        }
+        Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority authority = iterator.next();
+        String role = authority.getAuthority();
 
         if (role == null) {
             throw new IllegalArgumentException("Unknown role for user: " + username);

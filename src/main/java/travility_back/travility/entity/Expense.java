@@ -2,7 +2,7 @@ package travility_back.travility.entity;
 
 import jakarta.persistence.*;
 import travility_back.travility.entity.enums.Category;
-import travility_back.travility.entity.enums.PamentMethod;
+import travility_back.travility.entity.enums.PaymentMethod;
 
 import java.util.Date;
 
@@ -14,14 +14,13 @@ public class Expense {
     @Column(name = "expense_id")
     private Long id;
 
-    private String title;
-
+    @Column(nullable = false)
     private Date expenseDate; // 지출일자
 
+    @Column(nullable = false)
     private double amount; // 지출금액
 
-    private String curUnit; //통화 코드
-
+    @Column(nullable = false)
     private boolean isShared; // 공유경비 개인경비 구분. true - 공유 / false - 공유안함
 
     private String imgName;
@@ -33,7 +32,7 @@ public class Expense {
     private AccountBook accountBook; // 가계부
 
     @Enumerated(EnumType.STRING)
-    private PamentMethod paymentMethod; // 결제방법 [CARD, CASH]
+    private PaymentMethod paymentMethod; // 결제방법 [CARD, CASH]
 
     @Enumerated(EnumType.STRING)
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]

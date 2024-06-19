@@ -16,15 +16,12 @@ public class MemberController {
 
     //아이디 중복 확인
     @GetMapping("/api/duplicate-username")
-    public Map<String, Object> duplicateUsername(@RequestParam String username) {
+    public boolean duplicateUsername(@RequestParam String username) {
         boolean isDuplicate = memberService.duplicateUsername(username); //중복 여부
-        Map<String, Object> response = new HashMap<>();
         if (isDuplicate) { //중복이라면
-            response.put("duplicate", true);
-        }else{
-            response.put("duplicate", false);
+            return true;
         }
-        return response;
+        return false;
     }
 
     //회원가입
@@ -32,8 +29,6 @@ public class MemberController {
     public void signup(@RequestBody MemberDTO memberDTO) {
         memberService.signup(memberDTO);
     }
-
-    //로그인
 
     //로그아웃
 }
