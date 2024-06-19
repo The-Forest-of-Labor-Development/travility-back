@@ -1,4 +1,4 @@
-package travility_back.travility.dto;
+package travility_back.travility.dto.oauth.response;
 
 public interface OAuth2Response {
 

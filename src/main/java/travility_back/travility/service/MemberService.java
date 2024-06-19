@@ -28,13 +28,11 @@ public class MemberService {
         if (duplicateUsername(memberDTO.getUsername())){ //중복 확인
             throw new IllegalArgumentException("Duplicate username");
         }
-        Member member = new Member();
-        member.setUsername(memberDTO.getUsername());
-        member.setPassword(bCryptPasswordEncoder.encode(memberDTO.getPassword()));
-        member.setEmail(memberDTO.getEmail());
-        member.setBirth(memberDTO.getBirth());
-        member.setRole(Role.USER);
-        member.setCreatedDate(memberDTO.getCreatedDate());
+        System.out.println(memberDTO.getCreatedDate());
+        String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
+        memberDTO.setPassword(encodePassword);
+        memberDTO.setRole("ROLE_USER");
+        Member member = new Member(memberDTO);
 
         memberRepository.save(member);
     }

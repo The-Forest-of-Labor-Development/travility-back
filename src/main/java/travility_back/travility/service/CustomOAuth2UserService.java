@@ -6,14 +6,17 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import travility_back.travility.dto.CustomOAuthUser;
-import travility_back.travility.dto.NaverOAuth2LoginDto;
-import travility_back.travility.dto.OAuth2Response;
+import travility_back.travility.dto.oauth.CustomOAuthUser;
+import travility_back.travility.dto.oauth.NaverOAuth2LoginDto;
+import travility_back.travility.dto.oauth.response.OAuth2Response;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
-import travility_back.travility.response.GoogleResponse;
-import travility_back.travility.response.NaverResponse;
+import travility_back.travility.dto.oauth.response.GoogleResponse;
+import travility_back.travility.dto.oauth.response.NaverResponse;
+
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,19 +42,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         // 리소스 서버에서 발급받은 정보로 아이디값 만들기
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        String username = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
 
         // 해당 유저가 이미 로그인 했는지
-        Member isAlreadyLogin = memberRepository.findByUsername(username);
+        Optional<Member> isAlreadyLogin = memberRepository.findByUsername(username);
 
         // 한번도 로그인하지 않아서 null인경우
-        if (isAlreadyLogin == null) {
+        if (isAlreadyLogin.isEmpty()) {
 
             Member member = new Member();
             member.setUsername(username);
             member.setEmail(oAuth2Response.getEmail());
             member.setName(oAuth2Response.getName());
-            member.setRole(Role.USER);
+            member.setRole(Role.ROLE_USER);
+            member.setCreatedDate(new Date());
 
             memberRepository.save(member);
 
@@ -59,7 +63,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
             naverDto.setUsername(username);
             naverDto.setName(oAuth2Response.getName());
-            naverDto.setRole(Role.USER);
+            naverDto.setRole(Role.ROLE_USER);
 
             return new CustomOAuthUser(naverDto);
 
@@ -67,17 +71,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 한번이라도 로그인을 진행해서 데이터가 존재하는경우
         else {
             // 데이터를 업데이트해줘야함
-            isAlreadyLogin.setEmail(oAuth2Response.getEmail());
-            isAlreadyLogin.setName(oAuth2Response.getName());
+            Member member = isAlreadyLogin.get();
+            member.setEmail(oAuth2Response.getEmail());
+            member.setName(oAuth2Response.getName());
 
-            memberRepository.save(isAlreadyLogin);
+            memberRepository.save(member);
 
             // dto에 저장
             NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
-            naverDto.setUsername(isAlreadyLogin.getUsername());
+            naverDto.setUsername(member.getUsername());
             // name은 바뀐걸로 갖고와야해서 oAuth2Response에서 갖고옴
             naverDto.setName(oAuth2Response.getName());
-            naverDto.setRole(isAlreadyLogin.getRole());
+            naverDto.setRole(member.getRole());
 
             return new CustomOAuthUser(naverDto);
 

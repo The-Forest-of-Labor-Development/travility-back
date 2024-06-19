@@ -1,8 +1,11 @@
 package travility_back.travility.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,11 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import travility_back.travility.jwt.JWTFilter;
-import travility_back.travility.jwt.JWTUtil;
-import travility_back.travility.oauth.CustomSuccessHandler;
+import org.springframework.web.cors.CorsConfigurationSource;
+import travility_back.travility.security.oauth.CustomSuccessHandler;
+import travility_back.travility.security.LoginFilter;
+import travility_back.travility.security.jwt.JWTFilter;
+import travility_back.travility.security.jwt.JWTUtil;
 import travility_back.travility.service.CustomOAuth2UserService;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -22,9 +28,15 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JWTUtil jwtUtil;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
-    private final JWTUtil jwtUtil;
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -33,6 +45,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http //CorsConfiguration 객체에 설정을 세팅해서 객체 반환
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() { //cors 설정을 제공하는 소스
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); //이 url 요청 허용
+                        config.setAllowedMethods(Collections.singletonList("*")); //모든 HTTP 메서드 허용
+                        config.setAllowCredentials(true); //클라이언트가 서버에 요청할 때 자격 증명(쿠키, HTTP 인증) 포함할 건지.
+                        config.setAllowedHeaders(Collections.singletonList("*")); //클라이언트가 서버에 요청할 때 사용할 수 있는 헤더 지정
+                        config.setMaxAge(36000L);
+
+                        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+
+                        return config;
+                    }
+                })));
+
         http
                 .csrf((auth) -> auth.disable());
 
@@ -43,29 +72,22 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         http
+                .authorizeHttpRequests((auth)->auth
+                                .requestMatchers("/","/api/duplicate-username","/api/login","/api/signup").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
+                );
+
+        http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // 프론트단 CORS 설정
-        http
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
-
-                    CorsConfiguration configuration = new CorsConfiguration();
-
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-                    configuration.setMaxAge(3600L);
-
-                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-                    return configuration;
-                }));
 
         // JWTFilter 추가
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 로그인 설정
         http
@@ -75,11 +97,6 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler) // 성공 후 실행
                 );
 
-        // 경로에 대한 인가
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .anyRequest().authenticated());
 
         return http.build();
     }

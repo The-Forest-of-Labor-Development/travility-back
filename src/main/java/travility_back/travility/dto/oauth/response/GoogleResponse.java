@@ -1,7 +1,6 @@
-package travility_back.travility.response;
+package travility_back.travility.dto.oauth.response;
 
 import lombok.RequiredArgsConstructor;
-import travility_back.travility.dto.OAuth2Response;
 
 import java.util.Map;
 
