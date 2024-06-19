@@ -78,7 +78,7 @@ public class SecurityConfig {
         // 경로에 대한 인가
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/","/api/duplicate-username","/api/signup").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
