@@ -21,12 +21,6 @@ public class AccountBook {
 
     private int numberOfPeople;
 
-    private double totalBudget; // 총 예산
-
-    private double remainingSharedBudget; // 남은 공동경비
-
-    private double remainingPersonalBudget; // 남은 개인경비
-
     private String imgName;
 
     private String comment; // 후기

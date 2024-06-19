@@ -20,6 +20,8 @@ public class Expense {
 
     private double amount; // 지출금액
 
+    private String curUnit; //통화 코드
+
     private boolean isShared; // 공유경비 개인경비 구분. true - 공유 / false - 공유안함
 
     private String imgName;
