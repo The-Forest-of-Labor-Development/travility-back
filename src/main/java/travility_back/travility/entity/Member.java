@@ -1,6 +1,7 @@
 package travility_back.travility.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Setter
+@Getter
 public class Member {
 
     @Id
@@ -22,6 +24,9 @@ public class Member {
     private Long id;
 
     private String username;
+    
+    // 소셜로그인 받을 때 실명 나옴
+    private String name;
 
     private String password;
 
