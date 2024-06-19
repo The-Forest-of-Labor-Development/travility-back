@@ -10,8 +10,8 @@ spring:
         registration:
           naver:  # 네이버 OAuth2 설정
             client-name: naver
-            client-id: V6M6t0E5IFYxF6Cwb_lc
-            client-secret: n5gf2L_TbC
+            client-id: {  }
+            client-secret: {  }
             redirect-uri: http://localhost:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope:
@@ -19,8 +19,8 @@ spring:
               - email
           google:  # 구글 OAuth2 설정 : 구글은 provider필요없음
             client-name: google
-            client-id: 982270729134-9kmtoo0s06h0ad34ak764hn268rq2osp.apps.googleusercontent.com
-            client-secret: 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
+            client-id: {  }
+            client-secret: {  }
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             authorization-grant-type: authorization_code
             scope:
