@@ -73,7 +73,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth)->auth
-                                .requestMatchers("/","/api/duplicate-username","/api/login", "/api/auth/social-jwt","/api/signup").permitAll()
+                                .requestMatchers("/","/api/auth/**","/api/login","/api/signup").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
@@ -96,7 +96,6 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)) // 사용자 정보 가져오기
                         .successHandler(customSuccessHandler) // 성공 후 실행
                 );
-
 
         return http.build();
     }

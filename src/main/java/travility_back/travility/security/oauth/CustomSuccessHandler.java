@@ -38,7 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             throw new IllegalArgumentException("Unknown role for user: " + username);
         }
 
-        String token = jwtUtil.createJwt(username, role, 36000000L); // 유효기간 60분
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L); // 유효기간 60분
 
         // 토큰 전달방법 : 쿠키 전달
         response.addCookie(createCookie("Authorization", token));
@@ -48,7 +48,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     // 쿠키 만드는 메서드
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
+        cookie.setMaxAge(60 * 60); //1시간
         cookie.setPath("/"); // 모든 경로에 대해 쿠키가 보임
         cookie.setHttpOnly(true); // JavaScript가 쿠키를 가져가지 못하게 httpOnly설정 (거의 필수인듯)
 

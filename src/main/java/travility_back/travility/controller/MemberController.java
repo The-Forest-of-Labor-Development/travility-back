@@ -1,5 +1,7 @@
 package travility_back.travility.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +18,7 @@ public class MemberController {
     private final MemberService memberService;
 
     //아이디 중복 확인
-    @GetMapping("/api/duplicate-username")
+    @GetMapping("/api/auth/duplicate-username")
     public boolean duplicateUsername(@RequestParam String username) {
         boolean isDuplicate = memberService.duplicateUsername(username); //중복 여부
         if (isDuplicate) { //중복이라면
@@ -40,6 +42,23 @@ public class MemberController {
         response.addHeader("Authorization", "Bearer " + token);
     }
 
-
     //로그아웃
+    @PostMapping("/api/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookie = request.getCookies();
+        System.out.println(cookie);
+        if(cookie != null) { //쿠키 있음 -> 소셜 로그인 사용자
+            for(Cookie c : cookie) {
+                System.out.println("Cookie Name: " + c.getName());
+                if (c.getName().equals("Authorization") || c.getName().equals("JSESSIONID")) {
+                    c.setValue("");
+                    c.setPath("/"); //모든 경로에서 삭제
+                    c.setMaxAge(0); //유효 기간 0
+                    response.addCookie(c);
+                }
+            }
+        }
+
+        request.getSession().invalidate(); //세션 무효화
+    }
 }
