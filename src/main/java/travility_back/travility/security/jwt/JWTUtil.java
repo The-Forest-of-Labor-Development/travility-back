@@ -1,5 +1,6 @@
 package travility_back.travility.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,13 +40,17 @@ public class JWTUtil { //JWT 토큰 생성, 검증 메소드 클래스
 
     //JWT 만료 검증
     public Boolean isExpired(String token){
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration() //만료 시간 추출
-                .before(new Date()); //현재 시간보다 이전인지 확인
+        try {
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration() //만료 시간 추출
+                    .before(new Date()); //현재 시간보다 이전인지 확인
+        }catch(ExpiredJwtException e) {
+            return true;
+        }
     }
 
     public String createJwt(String username, String role, Long expiredMs){

@@ -1,5 +1,6 @@
 package travility_back.travility.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -33,8 +35,15 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = authorization.substring(7); //"Bearer " 이후부터 토큰
 
         if (jwtUtil.isExpired(token)){ //true면 token 만료
+            //throw new IllegalArgumentException("token expired");
             System.out.println("token expired");
-            throw new IllegalArgumentException("token 만료");
+            response.setStatus(401);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            String json = "{\"message\" : \"Token expired\"}";
+            response.getWriter().write(json);
+            response.getWriter().flush();
+            return;
         }
 
         String username = jwtUtil.getUsername(token);

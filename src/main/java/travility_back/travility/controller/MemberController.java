@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.service.MemberService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
