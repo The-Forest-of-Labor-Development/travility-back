@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.entity.enums.Role;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,12 +35,12 @@ public class Member {
 
     private String email;
 
-    private String birth;
+    private String socialType;
 
     @Enumerated(EnumType.STRING)
     private Role role; // 권한 [ROLE_USER, ROLE_ADMIN]
 
-    private Date createdDate; // 가입일자
+    private LocalDateTime createdDate; // 가입일자
 
     @OneToMany(mappedBy = "member")
     private List<AccountBook> accountBooks = new ArrayList<>();
@@ -48,7 +49,6 @@ public class Member {
         this.username = memberDTO.getUsername();
         this.password = memberDTO.getPassword();
         this.email = memberDTO.getEmail();
-        this.birth = memberDTO.getBirth();
         this.role = Role.valueOf(memberDTO.getRole());
         this.createdDate = memberDTO.getCreatedDate();
     }

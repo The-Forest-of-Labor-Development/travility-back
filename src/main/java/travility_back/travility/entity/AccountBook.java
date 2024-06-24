@@ -19,10 +19,11 @@ public class AccountBook {
     @Column(nullable = false)
     private Date endDate; // 여행 종료일자
 
-//    private Country country; // 국가정보 (api)
+    @Column(nullable = false)
+    private String countryName;
 
-//    private String countryName;
-//    private String countryFlag;
+    @Column(nullable = false)
+    private String countryFlag;
 
     @Column(nullable = false)
     private int numberOfPeople; //인원

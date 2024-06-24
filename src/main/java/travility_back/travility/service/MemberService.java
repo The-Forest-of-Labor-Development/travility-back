@@ -10,6 +10,7 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ public class MemberService {
         System.out.println(memberDTO.getCreatedDate());
         String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
         memberDTO.setPassword(encodePassword);
+        memberDTO.setCreatedDate(LocalDateTime.now());
         memberDTO.setRole("ROLE_USER");
         Member member = new Member(memberDTO);
 
@@ -51,6 +53,8 @@ public class MemberService {
             map.put("username", member.getUsername());
             map.put("email", data.get().getEmail());
             map.put("role", data.get().getRole().toString());
+            map.put("socialType", data.get().getSocialType());
+            map.put("createdDate", data.get().getCreatedDate().toString());
         }else{
             throw new IllegalArgumentException("User not found");
         }

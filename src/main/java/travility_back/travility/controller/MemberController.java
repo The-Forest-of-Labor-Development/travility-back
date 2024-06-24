@@ -48,7 +48,7 @@ public class MemberController {
         response.addHeader("Authorization", "Bearer " + token);
     }
 
-    //
+    //로그아웃
     @PostMapping("/api/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookie = request.getCookies();
@@ -69,11 +69,13 @@ public class MemberController {
         System.out.println("로그아웃 성공");
     }
 
+    //토큰 만료 여부
     @GetMapping("/api/auth/check-token")
     public boolean checkToken() { //토큰이 만료되었으면 jwt 필터에서 걸린다.
         return true;
     }
 
+    //회원 정보
     @GetMapping("/api/users")
     public Map<String, String> getMemberInfo(@AuthenticationPrincipal CustomUserDetails member) {
         return memberService.getMemberInfo(member);

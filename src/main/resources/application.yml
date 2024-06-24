@@ -1,7 +1,6 @@
 spring:
   jwt:
-    secret: "afsdlkdfavjnmoiasnfqwpqoiwjpoivsdjklsdafoiuanidvosadlkjldasfjtyrhpoiqwmaksfjobinbmasdmoon"
-
+    secret: 15b86a423862e4744d84a72dfeaa1a8ed98619816f4002638383e402f99699cbb195bce322d41b11cb9b00e0886fbbff8c01e2eb10a06ed28ff3f3a50ed50e7b
   datasource:
     url: jdbc:mysql://localhost:3306/travilitydb
     username: travilityuser
@@ -39,7 +38,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -50,4 +49,3 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
-

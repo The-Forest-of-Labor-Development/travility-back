@@ -16,8 +16,21 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    //전체 회원 리스트
     @GetMapping("/api/admin/users")
     public List<MemberDTO> getMemberList() {
         return adminService.getMemberList();
+    }
+
+    //전체 회원 수
+    @GetMapping("/api/admin/users/total-count")
+    public long getTotalMembersCount() {
+        return adminService.getTotalMembersCount();
+    }
+
+    //신규 가입자 수
+    @GetMapping("/api/admin/users/new-today")
+    public long getNewMembersCountToday() {
+        return adminService.getNewMembersCountToday();
     }
 }

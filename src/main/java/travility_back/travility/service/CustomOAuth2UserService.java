@@ -15,6 +15,7 @@ import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.dto.oauth.response.GoogleResponse;
 import travility_back.travility.dto.oauth.response.NaverResponse;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,12 +31,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
+        Member member = new Member();
 
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes()); // 초기화
+            member.setSocialType("naver");
         }
         else if (registrationId.equals("google")) {
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes()); // 초기화
+            member.setSocialType("google");
         }
         else {
             return null;
@@ -50,12 +54,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 한번도 로그인하지 않아서 null인경우
         if (isAlreadyLogin.isEmpty()) {
 
-            Member member = new Member();
             member.setUsername(username);
             member.setEmail(oAuth2Response.getEmail());
             member.setName(oAuth2Response.getName());
             member.setRole(Role.ROLE_USER);
-            member.setCreatedDate(new Date());
+            member.setCreatedDate(LocalDateTime.now());
 
             memberRepository.save(member);
 
@@ -71,11 +74,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 한번이라도 로그인을 진행해서 데이터가 존재하는경우
         else {
             // 데이터를 업데이트해줘야함
-            Member member = isAlreadyLogin.get();
-            member.setEmail(oAuth2Response.getEmail());
-            member.setName(oAuth2Response.getName());
+            Member existData = isAlreadyLogin.get();
+            existData.setEmail(oAuth2Response.getEmail());
+            existData.setName(oAuth2Response.getName());
 
-            memberRepository.save(member);
+            memberRepository.save(existData);
 
             // dto에 저장
             NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
