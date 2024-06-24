@@ -9,7 +9,7 @@ public class Country {
     // api
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "country_id")
     private Long id;
 
