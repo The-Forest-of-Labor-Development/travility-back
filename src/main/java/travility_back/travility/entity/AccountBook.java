@@ -9,7 +9,7 @@ import java.util.List;
 public class AccountBook {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_book_id")
     private Long id;
 
@@ -35,10 +35,10 @@ public class AccountBook {
 
     private String imgName;
 
-    @OneToMany
+    @OneToMany(mappedBy = "accountBook")
     private List<Budget> budgets;
 
-    @OneToMany
+    @OneToMany(mappedBy = "accountBook")
     private List<Expense> expenses;
 
     @ManyToOne(fetch = FetchType.LAZY)
