@@ -60,7 +60,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority grantedAuthority = iterator.next(); //첫 번째 권한
         String role = grantedAuthority.getAuthority(); //권한 이름 반환
 
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L); //1시간. 밀리초 단위
+
+        String token = jwtUtil.createJwt(username, role,60 * 60 * 1000L); //1시간. 밀리초 단위
 
         response.setContentType("application/json"); //응답 타입 JSON
         response.setCharacterEncoding("UTF-8");

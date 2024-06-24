@@ -21,6 +21,9 @@ public class AccountBook {
 
 //    private Country country; // 국가정보 (api)
 
+//    private String countryName;
+//    private String countryFlag;
+
     @Column(nullable = false)
     private int numberOfPeople; //인원
 

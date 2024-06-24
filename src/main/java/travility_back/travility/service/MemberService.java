@@ -4,10 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import travility_back.travility.dto.CustomUserDetails;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,21 @@ public class MemberService {
         Member member = new Member(memberDTO);
 
         memberRepository.save(member);
+    }
+
+    //회원 정보
+    @Transactional
+    public Map<String, String> getMemberInfo(CustomUserDetails member){
+        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
+        Map<String, String> map = new HashMap<>();
+        if(data.isPresent()){
+            map.put("username", member.getUsername());
+            map.put("email", data.get().getEmail());
+            map.put("role", data.get().getRole().toString());
+        }else{
+            throw new IllegalArgumentException("User not found");
+        }
+        return map;
     }
 
 }

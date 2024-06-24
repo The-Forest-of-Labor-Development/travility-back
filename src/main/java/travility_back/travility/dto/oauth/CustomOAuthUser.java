@@ -42,4 +42,5 @@ public class CustomOAuthUser implements OAuth2User {
         return naverOAuth2LoginDto.getUsername();
     }
 
+
 }

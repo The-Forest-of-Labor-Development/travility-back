@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import travility_back.travility.security.error.CustomAccessDeniedHandler;
 import travility_back.travility.security.oauth.CustomSuccessHandler;
 import travility_back.travility.security.LoginFilter;
 import travility_back.travility.security.jwt.JWTFilter;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -73,10 +75,13 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth)->auth
-                                .requestMatchers("/","/api/auth/**","/api/login","/api/signup").permitAll()
+                                .requestMatchers("/","/api/auth/**","/api/login", "/api/logout","/api/signup").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
+
+        http.exceptionHandling((exception)-> exception
+                .accessDeniedHandler(customAccessDeniedHandler));
 
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
