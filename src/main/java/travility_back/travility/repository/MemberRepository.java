@@ -1,5 +1,7 @@
 package travility_back.travility.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     long countByRole(Role role);
     @Query("select count(*) from Member m where m.createdDate >= :startDate and m.createdDate <= :endDate and m.role = :role")
     long countNewMembersToday(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("role") Role role); //오늘 날짜 신규 가입자 수
+    Page<Member> findAllByRoleOrderByCreatedDateDesc(Role role, Pageable pageable);
+    Page<Member> findAllByRoleOrderByCreatedDateAsc(Role role, Pageable pageable);
 }
