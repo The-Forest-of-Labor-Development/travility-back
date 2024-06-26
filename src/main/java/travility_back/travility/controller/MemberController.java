@@ -80,4 +80,26 @@ public class MemberController {
     public Map<String, String> getMemberInfo(@AuthenticationPrincipal CustomUserDetails member) {
         return memberService.getMemberInfo(member);
     }
+
+    //회원 탈퇴
+    @DeleteMapping("/api/users")
+    public void deleteMember(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails member) {
+        System.out.println(member.getUsername());
+        String socialType = getMemberInfo(member).get("socialType");
+        System.out.println(socialType);
+
+        if(socialType  == null) {//일반 로그인 사용자
+            memberService.deleteStandardAccount(member);
+            logout(request, response);
+        } else if (socialType.equals("naver")) {//네이버 로그인 사용자
+            memberService.deleteNaverAccount(member);
+            logout(request, response);
+        } else if (socialType.equals("google")) {//구글 로그인 사용자
+            memberService.deleteGoogleAccount(member);
+            logout(request, response);
+        } else {//카카오 로그인 사용자
+            memberService.deleteKakaoAccount(member);
+            logout(request, response);
+        }
+    }
 }

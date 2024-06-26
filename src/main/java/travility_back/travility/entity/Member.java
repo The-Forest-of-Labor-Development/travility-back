@@ -3,15 +3,12 @@ package travility_back.travility.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.entity.enums.Role;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -41,6 +38,8 @@ public class Member {
     private Role role; // 권한 [ROLE_USER, ROLE_ADMIN]
 
     private LocalDateTime createdDate; // 가입일자
+
+    private String accessToken;
 
     @OneToMany(mappedBy = "member")
     private List<AccountBook> accountBooks = new ArrayList<>();

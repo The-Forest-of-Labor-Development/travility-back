@@ -15,6 +15,7 @@ import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.dto.oauth.response.GoogleResponse;
 import travility_back.travility.dto.oauth.response.NaverResponse;
 
+import java.security.AuthProvider;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
@@ -32,6 +33,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
         Member member = new Member();
+
+        String accessToken = userRequest.getAccessToken().getTokenValue();
 
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes()); // 초기화
@@ -59,6 +62,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             member.setName(oAuth2Response.getName());
             member.setRole(Role.ROLE_USER);
             member.setCreatedDate(LocalDateTime.now());
+            member.setAccessToken(accessToken);
 
             memberRepository.save(member);
 
@@ -77,15 +81,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Member existData = isAlreadyLogin.get();
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
+            existData.setAccessToken(accessToken);
 
             memberRepository.save(existData);
 
             // dto에 저장
             NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
-            naverDto.setUsername(member.getUsername());
+            naverDto.setUsername(username);
             // name은 바뀐걸로 갖고와야해서 oAuth2Response에서 갖고옴
             naverDto.setName(oAuth2Response.getName());
-            naverDto.setRole(member.getRole());
+            naverDto.setRole(existData.getRole());
 
             return new CustomOAuthUser(naverDto);
 
