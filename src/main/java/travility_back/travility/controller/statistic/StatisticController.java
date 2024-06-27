@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import travility_back.travility.dto.statistics.MyReportExpenseStatisticsDTO;
 import travility_back.travility.entity.Member;
-import travility_back.travility.service.statistic.ExpenseService;
+import travility_back.travility.service.statistic.StatisticService;
 
 @RestController
 @RequestMapping("/api/accountbook")
 @RequiredArgsConstructor
-public class ExpenseController {
+public class StatisticController {
 
-    private final ExpenseService expenseService;
+    private final StatisticService expenseService;
 
     @GetMapping("/detail")
     public ResponseEntity<MyReportExpenseStatisticsDTO> getStatistics() {
