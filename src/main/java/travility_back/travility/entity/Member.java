@@ -48,7 +48,7 @@ public class Member {
         this.username = memberDTO.getUsername();
         this.password = memberDTO.getPassword();
         this.email = memberDTO.getEmail();
-        this.role = Role.valueOf(memberDTO.getRole());
+        this.role = memberDTO.getRole();
         this.createdDate = memberDTO.getCreatedDate();
     }
 }

@@ -51,7 +51,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setUsername(username);
-        memberDTO.setRole(role.toUpperCase());
+        memberDTO.setRole(Role.valueOf(role.toUpperCase()));
         memberDTO.setPassword("temppassword");
 
         CustomUserDetails customUserDetails = new CustomUserDetails(memberDTO);
