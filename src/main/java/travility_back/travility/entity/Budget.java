@@ -1,9 +1,17 @@
 package travility_back.travility.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import travility_back.travility.dto.BudgetDTO;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Budget {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "budget_id")
@@ -19,6 +27,17 @@ public class Budget {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_book_id")
-    private AccountBook accountBook; // 가계부
+    private AccountBook accountBook;
 
+    public Budget(BudgetDTO budgetDTO, AccountBook accountBook) {
+        this.isShared = budgetDTO.isShared();
+        this.curUnit = budgetDTO.getCurUnit();
+        this.exchangeRate = budgetDTO.getExchangeRate();
+        this.amount = budgetDTO.getAmount();
+        this.accountBook = accountBook;
+    }
+
+    public BudgetDTO toDTO() {
+        return new BudgetDTO(id, isShared, curUnit, exchangeRate, amount);
+    }
 }
