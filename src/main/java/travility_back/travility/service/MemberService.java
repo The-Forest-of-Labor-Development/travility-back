@@ -171,9 +171,4 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
         return member.getId();
     }
-
-    public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + memberId));
-    }
 }
