@@ -1,12 +1,18 @@
 package travility_back.travility.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Expense {
 
     @Id
@@ -36,6 +42,5 @@ public class Expense {
 
     @Enumerated(EnumType.STRING)
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]
-
 
 }

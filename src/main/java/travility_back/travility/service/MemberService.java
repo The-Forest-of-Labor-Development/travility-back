@@ -50,7 +50,7 @@ public class MemberService {
         String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
         memberDTO.setPassword(encodePassword);
         memberDTO.setCreatedDate(LocalDateTime.now());
-        memberDTO.setRole("ROLE_USER");
+        memberDTO.setRole(Role.ROLE_USER); // Role 타입으로 설정
         Member member = new Member(memberDTO);
 
         memberRepository.save(member);
@@ -173,4 +173,9 @@ public class MemberService {
     }
 
 
+    public Long findMemberId(String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        return member.getId();
+    }
 }

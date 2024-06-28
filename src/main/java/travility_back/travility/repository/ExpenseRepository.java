@@ -20,5 +20,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     // 결제 방법별 지출 금액
     @Query("select e.paymentMethod, SUM(e.amount) from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
+
+
 }
 
