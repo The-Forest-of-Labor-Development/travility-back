@@ -41,7 +41,7 @@ public class Member {
 
     private String accessToken;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountBook> accountBooks = new ArrayList<>();
 
     public Member(MemberDTO memberDTO){

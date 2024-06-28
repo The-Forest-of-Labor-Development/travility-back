@@ -29,6 +29,7 @@ public class AccountBookController {
         return accountBookService.getAccountBookById(id);
     }
 
+    //가계부 등록
     @PostMapping
     public AccountBookDTO createAccountBook(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @RequestBody AccountBookDTO accountBookDTO) {
@@ -38,8 +39,11 @@ public class AccountBookController {
         return accountBookService.saveAccountBook(accountBookDTO);
     }
 
+    //가계부 삭제
     @DeleteMapping("/{id}")
     public void deleteAccountBook(@PathVariable Long id) {
         accountBookService.deleteAccountBook(id);
     }
+
+    //가계부 수정
 }
