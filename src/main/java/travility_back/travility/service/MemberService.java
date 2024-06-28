@@ -166,4 +166,11 @@ public class MemberService {
         return (HttpStatus) responseEntity.getStatusCode();
     }
 
+    // 객체 갖고오기
+    public Member getMemberByUsername(String username) {
+        Optional<Member> member = memberRepository.findByUsername(username);
+        return member.orElseThrow(() -> new IllegalArgumentException("다음의 이름을 찾을 수 없음. : " + username));
+    }
+
+
 }
