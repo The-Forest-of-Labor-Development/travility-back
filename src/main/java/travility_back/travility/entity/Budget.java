@@ -1,5 +1,6 @@
 package travility_back.travility.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ public class Budget {
     @Column(name = "budget_id")
     private Long id;
 
+    @Column(name = "is_shared", columnDefinition = "BIT(1)")
+    @JsonProperty("isShared")
     private boolean isShared; //공유 경비 or 개인 경비
 
     private String curUnit; //통화 코드
