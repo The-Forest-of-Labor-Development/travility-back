@@ -16,11 +16,11 @@ import travility_back.travility.service.statistic.StatisticService;
 @RequiredArgsConstructor
 public class StatisticController {
 
-    private final StatisticService expenseService;
+    private final StatisticService statisticService;
 
     @GetMapping("/detail")
     public ResponseEntity<MyReportExpenseStatisticsDTO> getStatistics() {
-        MyReportExpenseStatisticsDTO statisticsDto = expenseService.getStatistics();
+        MyReportExpenseStatisticsDTO statisticsDto = statisticService.getStatistics();
         return ResponseEntity.ok(statisticsDto);
     }
 
@@ -28,7 +28,7 @@ public class StatisticController {
     public ResponseEntity<Member> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        Member member = expenseService.getMemberByUsername(username);
+        Member member = statisticService.getMemberByUsername(username);
         return ResponseEntity.ok(member);
     }
 }
