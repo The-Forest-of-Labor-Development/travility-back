@@ -1,11 +1,15 @@
 package travility_back.travility.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@Getter
 public class AccountBook {
 
     @Id
@@ -14,10 +18,12 @@ public class AccountBook {
     private Long id;
 
     @Column(nullable = false)
-    private Date startDate; // 여행 시작일자
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate startDate; // 여행 시작일자
 
     @Column(nullable = false)
-    private Date endDate; // 여행 종료일자
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate endDate; // 여행 종료일자
 
     @Column(nullable = false)
     private String countryName;
