@@ -5,9 +5,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import travility_back.travility.dto.AccountBookDTO;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -49,4 +53,16 @@ public class AccountBook {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public AccountBook(AccountBookDTO accountBookDTO){
+        this.startDate = accountBookDTO.getStartDate();
+        this.endDate = accountBookDTO.getEndDate();
+        this.countryName = accountBookDTO.getCountryName();
+        this.countryFlag = accountBookDTO.getCountryFlag();
+        this.numberOfPeople = accountBookDTO.getNumberOfPeople();
+        this.title = accountBookDTO.getTitle();
+        this.budgets = accountBookDTO.getBudgets().stream()
+                .map(budgetDTO -> new Budget(budgetDTO, this))
+                .collect(Collectors.toList());
+    }
 }

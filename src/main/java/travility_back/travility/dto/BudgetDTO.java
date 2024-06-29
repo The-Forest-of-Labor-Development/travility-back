@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import travility_back.travility.entity.Budget;
 
 @Getter
 @Setter
@@ -17,4 +18,11 @@ public class BudgetDTO {
     private String curUnit;
     private double exchangeRate;
     private double amount;
+
+    public BudgetDTO(Budget budget){
+        this.isShared = budget.isShared();
+        this.curUnit = budget.getCurUnit();
+        this.exchangeRate = budget.getExchangeRate();
+        this.amount = budget.getAmount();
+    }
 }
