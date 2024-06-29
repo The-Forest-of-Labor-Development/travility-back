@@ -21,6 +21,9 @@ public class Expense {
     private Long id;
 
     @Column(nullable = false)
+    private String title; // 항목명
+
+    @Column(nullable = false)
     private Date expenseDate; // 지출일자
 
     @Column(nullable = false)
@@ -43,4 +46,5 @@ public class Expense {
     @Enumerated(EnumType.STRING)
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]
 
+    private String curUnit; // 화폐 단위
 }

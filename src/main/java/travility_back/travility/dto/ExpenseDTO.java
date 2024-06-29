@@ -11,6 +11,7 @@ import java.util.Date;
 @Setter
 public class ExpenseDTO {
     private Long id;
+    private String title;
     private Date expenseDate;
     private double amount;
     private boolean isShared;
@@ -19,4 +20,5 @@ public class ExpenseDTO {
     private Long accountBookId;
     private PaymentMethod paymentMethod;
     private Category category;
+    private String curUnit;
 }

@@ -20,6 +20,7 @@ public class AccountExpenseService {
                 .orElseThrow(() -> new RuntimeException("Account book not found"));
 
         Expense expense = new Expense();
+        expense.setTitle(expenseDTO.getTitle());
         expense.setExpenseDate(expenseDTO.getExpenseDate());
         expense.setAmount(expenseDTO.getAmount());
         expense.setShared(expenseDTO.isShared());
@@ -28,6 +29,7 @@ public class AccountExpenseService {
         expense.setAccountBook(accountBook);
         expense.setPaymentMethod(expenseDTO.getPaymentMethod());
         expense.setCategory(expenseDTO.getCategory());
+        expense.setCurUnit(expenseDTO.getCurUnit());
 
         Expense savedExpense = expenseRepository.save(expense);
 
