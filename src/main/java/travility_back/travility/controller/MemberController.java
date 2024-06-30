@@ -12,7 +12,6 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.security.jwt.JWTUtil;
 import travility_back.travility.service.MemberService;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +96,7 @@ public class MemberController {
         } else if (socialType.equals("google")) {//구글 로그인 사용자
             memberService.deleteGoogleAccount(member);
             logout(request, response);
-        } else {//카카오 로그인 사용자
+        } else if (socialType.equals("kakao")) { // 카카오
             memberService.deleteKakaoAccount(member);
             logout(request, response);
         }
