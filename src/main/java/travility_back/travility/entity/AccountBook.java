@@ -7,6 +7,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import travility_back.travility.dto.AccountBookDTO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,10 +26,10 @@ public class AccountBook {
     private Long id;
 
     @Column(nullable = false)
-    private Date startDate; // 여행 시작일자
+    private LocalDate startDate; // 여행 시작일자
 
     @Column(nullable = false)
-    private Date endDate; // 여행 종료일자
+    private LocalDate endDate; // 여행 종료일자
 
     @Column(nullable = false)
     private String countryName;

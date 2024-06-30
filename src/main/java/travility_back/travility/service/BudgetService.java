@@ -1,5 +1,6 @@
 package travility_back.travility.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,16 +14,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BudgetService {
 
-    @Autowired
-    private BudgetRepository budgetRepository;
+    private final BudgetRepository budgetRepository;
+    private final AccountBookRepository accountBookRepository;
 
-    @Autowired
-    private AccountBookRepository accountBookRepository;
-
+    //예산 등록
     @Transactional
-    public List<BudgetDTO> saveBudgets(Long accountBookId, List<BudgetDTO> budgetDTOs) {
+    public List<BudgetDTO> createBudgets(Long accountBookId, List<BudgetDTO> budgetDTOs) {
         AccountBook accountBook = accountBookRepository.findById(accountBookId)
                 .orElseThrow(() -> new RuntimeException("AccountBook not found"));
 
@@ -38,17 +38,17 @@ public class BudgetService {
         accountBookRepository.save(accountBook);
 
         return budgets.stream()
-                .map(this::convertToDTO)
+                .map(budget -> new BudgetDTO(budget))
                 .collect(Collectors.toList());
     }
 
-    private BudgetDTO convertToDTO(Budget budget) {
-        return new BudgetDTO(
-                budget.getId(),
-                budget.isShared(),
-                budget.getCurUnit(),
-                budget.getExchangeRate(),
-                budget.getAmount()
-        );
-    }
+//    private BudgetDTO convertToDTO(Budget budget) {
+//        return new BudgetDTO(
+//                budget.getId(),
+//                budget.isShared(),
+//                budget.getCurUnit(),
+//                budget.getExchangeRate(),
+//                budget.getAmount()
+//        );
+//    }
 }

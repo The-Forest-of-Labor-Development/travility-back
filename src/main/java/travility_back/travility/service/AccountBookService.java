@@ -16,6 +16,7 @@ import travility_back.travility.repository.MemberRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class AccountBookService {
     //가계부 전체 조회
     @Transactional(readOnly=true)
     public List<AccountBookDTO> getAllAccountBooks(String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new IllegalStateException("Member not found with username: " + username));
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("Member not found with username: " + username));
         return accountBookRepository.findByMember(member).stream()
                 .map(accountBook -> new AccountBookDTO(accountBook))
                 .collect(Collectors.toList());
@@ -38,14 +39,14 @@ public class AccountBookService {
     //가계부 조회
     @Transactional(readOnly=true)
     public AccountBookDTO getAccountBookById(Long id) {
-        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new IllegalStateException("AccountBook not found"));
+        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
         return new AccountBookDTO(accountBook);
     }
 
     //가계부 등록
     @Transactional
-    public AccountBookDTO saveAccountBook(AccountBookDTO accountBookDTO, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new IllegalStateException("Member not found with username: " + username));
+    public AccountBookDTO createAccountBook(AccountBookDTO accountBookDTO, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("Member not found with username: " + username));
         AccountBook accountBook = new AccountBook(accountBookDTO);
         accountBook.setMember(member);
         accountBook.setImgName("default_image.png");
@@ -75,22 +76,33 @@ public class AccountBookService {
         }
 
         //수정할 AccountBook 찾기
-        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new IllegalStateException("AccountBook not found"));
+        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
 
-        //이미지 로컬 서버에 업로드
-        String path = "C:/fullstack/final_project/images/"; //이미지 저장할 서버 주소
-        String originalName = img.getOriginalFilename(); //파일 원본 이름
-        String extension = originalName.substring(originalName.indexOf(".")); //파일 확장자
-        String newImgName = UUID.randomUUID().toString() + extension; //새 이미지 이름
-        img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
+        if(img!=null && !img.isEmpty()){ //이미지가 있을 경우
+            //이미지 로컬 서버에 업로드
+            String path = "C:/fullstack/final_project/images/"; //이미지 저장할 서버 주소
+            String originalName = img.getOriginalFilename(); //파일 원본 이름
+            String extension = originalName.substring(originalName.indexOf(".")); //파일 확장자
+            String newImgName = UUID.randomUUID().toString() + extension; //새 이미지 이름
+            img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
+
+            //기존 이미지 파일 삭제
+            if(accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
+                File oldImg = new File(path,accountBook.getImgName());
+                if (oldImg.exists()){
+                    oldImg.delete();
+                }
+            }
+            accountBook.setImgName(newImgName);
+        }
 
         //AccountBook 수정
         accountBook.setCountryName(accountBookDTO.getCountryName());
         accountBook.setCountryFlag(accountBookDTO.getCountryFlag());
         accountBook.setTitle(accountBookDTO.getTitle());
+        accountBook.setNumberOfPeople(accountBookDTO.getNumberOfPeople());
         accountBook.setStartDate(accountBookDTO.getStartDate());
         accountBook.setEndDate(accountBookDTO.getEndDate());
-        accountBook.setImgName(newImgName);
     }
 
 //    private AccountBookDTO convertToDTO(AccountBook accountBook) {

@@ -6,6 +6,7 @@ import lombok.Setter;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Member;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class AccountBookDTO {
     private Long id;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String countryName;
     private String countryFlag;
     private int numberOfPeople;
@@ -33,6 +34,7 @@ public class AccountBookDTO {
         this.countryFlag = accountBook.getCountryFlag();
         this.numberOfPeople = accountBook.getNumberOfPeople();
         this.title = accountBook.getTitle();
+        this.imgName = accountBook.getImgName();
         this.budgets = accountBook.getBudgets().stream()
                 .map(budget -> new BudgetDTO(budget))
                 .collect(Collectors.toList());

@@ -20,6 +20,7 @@ public class BudgetDTO {
     private double amount;
 
     public BudgetDTO(Budget budget){
+        this.id = budget.getId();
         this.isShared = budget.isShared();
         this.curUnit = budget.getCurUnit();
         this.exchangeRate = budget.getExchangeRate();

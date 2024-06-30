@@ -1,8 +1,8 @@
 package travility_back.travility.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,7 @@ import travility_back.travility.repository.MemberRepository;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class MemberService {
     @Transactional
     public Long findMemberId(String username) {
         Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new NoSuchElementException("User not found with username: " + username));
         return member.getId();
     }
 
@@ -50,7 +51,7 @@ public class MemberService {
     @Transactional
     public void signup(MemberDTO memberDTO) {
         if (duplicateUsername(memberDTO.getUsername())) { //중복 확인
-            throw new IllegalArgumentException("Duplicate username");
+            throw new DuplicateKeyException("Duplicate username");
         }
         System.out.println(memberDTO.getCreatedDate());
         String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
@@ -63,9 +64,9 @@ public class MemberService {
     }
 
     //회원 정보
-    @Transactional
+    @Transactional(readOnly = true)
     public Map<String, String> getMemberInfo(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalStateException("Member not found"));
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         Map<String, String> map = new HashMap<>();
         map.put("username", member.getUsername());
         map.put("email", member.getEmail());
@@ -78,14 +79,14 @@ public class MemberService {
     //일반 회원 탈퇴
     @Transactional
     public void deleteStandardAccount(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalStateException("Member not found"));
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         memberRepository.deleteById(member.getId());
     }
 
     //네이버 회원 탈퇴
     @Transactional
     public void deleteNaverAccount(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalStateException("Member not found"));
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         String requestUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete" +
                 "&client_id=" + naverClientId +
                 "&client_secret=" + naverClientSecret +
@@ -95,7 +96,7 @@ public class MemberService {
             sendRevokeRequest(requestUrl, "NAVER", null);
             memberRepository.deleteById(member.getId());
         } catch (HttpClientErrorException e) {
-            throw new IllegalStateException("Failed to revoke token for provider: NAVER");
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -103,20 +104,21 @@ public class MemberService {
     //구글 회원 탈퇴
     @Transactional
     public void deleteGoogleAccount(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalStateException("Member not found"));
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         String requestUrl = "https://accounts.google.com/o/oauth2/revoke?token=" + member.getAccessToken();
         try {
             sendRevokeRequest(requestUrl, "GOOGLE", null);
             memberRepository.deleteById(member.getId());
         } catch (HttpClientErrorException e) {
-            throw new IllegalStateException("Failed to revoke token for provider: GOOGLE");
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
     //카카오 회원 탈퇴
     @Transactional
     public void deleteKakaoAccount(CustomUserDetails userDetails) { //카카오만 헤더에 액세스 토큰 담아서 전달
-        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalStateException("Member not found"));
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
 
         String requestUrl = "https://kapi.kakao.com/v1/user/unlink";
         HttpHeaders headers = new HttpHeaders();
@@ -126,7 +128,8 @@ public class MemberService {
             sendRevokeRequest(requestUrl, "KAKAO", headers);
             memberRepository.deleteById(member.getId());
         } catch (HttpClientErrorException e) {
-            throw new IllegalStateException("Failed to revoke token for provider: KAKAO");
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
     }

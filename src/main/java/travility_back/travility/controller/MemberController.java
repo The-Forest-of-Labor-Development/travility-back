@@ -33,12 +33,6 @@ public class MemberController {
         return false;
     }
 
-    //회원가입
-    @PostMapping("/api/signup")
-    public void signup(@RequestBody MemberDTO memberDTO) {
-        memberService.signup(memberDTO);
-    }
-
     //쿠키 JWT -> 헤더 JWT
     @GetMapping("/api/auth/social-jwt")
     public void getTokenfromCookie(@CookieValue("Authorization") String token, HttpServletResponse response) {
@@ -46,6 +40,18 @@ public class MemberController {
             response.setStatus(401); //권한 없음
         }
         response.addHeader("Authorization", "Bearer " + token);
+    }
+
+    //토큰 만료 여부
+    @GetMapping("/api/auth/check-token")
+    public boolean checkToken() { //토큰이 만료되었으면 jwt 필터에서 걸린다.
+        return true;
+    }
+
+    //회원가입
+    @PostMapping("/api/signup")
+    public void signup(@RequestBody MemberDTO memberDTO) {
+        memberService.signup(memberDTO);
     }
 
     //로그아웃
@@ -67,12 +73,6 @@ public class MemberController {
 
         request.getSession().invalidate(); //세션 무효화
         System.out.println("로그아웃 성공");
-    }
-
-    //토큰 만료 여부
-    @GetMapping("/api/auth/check-token")
-    public boolean checkToken() { //토큰이 만료되었으면 jwt 필터에서 걸린다.
-        return true;
     }
 
     //회원 정보
