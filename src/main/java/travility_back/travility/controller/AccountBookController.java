@@ -25,7 +25,7 @@ public class AccountBookController {
     }
 
     @GetMapping("/{id}")
-    public Optional<AccountBookDTO> getAccountBookById(@PathVariable Long id) {
+    public Optional<AccountBookDTO> getAccountBookById(@PathVariable("id") Long id) {
         return accountBookService.getAccountBookById(id);
     }
 
@@ -34,7 +34,7 @@ public class AccountBookController {
                                             @RequestBody AccountBookDTO accountBookDTO) {
         String username = userDetails.getUsername();
         Long memberId = memberService.findMemberId(username);
-        accountBookDTO.getMember().setMemberId(memberId);
+        accountBookDTO.getMember().setId(memberId);
         return accountBookService.saveAccountBook(accountBookDTO);
     }
 
