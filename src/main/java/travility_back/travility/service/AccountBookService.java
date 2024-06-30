@@ -76,8 +76,8 @@ public class AccountBookService {
 
         MemberDTO memberDTO = accountBookDTO.getMember();
         if (memberDTO != null) {
-            Member member = memberRepository.findById(memberDTO.getMemberId())
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + memberDTO.getMemberId()));
+            Member member = memberRepository.findById(memberDTO.getId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + memberDTO.getId()));
             accountBook.setMember(member);
         }
 
