@@ -2,6 +2,7 @@ package travility_back.travility.controller.statistic;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import travility_back.travility.service.statistic.ExpenseService;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final AuthenticationManager authenticationManager;
 
     @GetMapping("/detail")
     public ResponseEntity<MyReportExpenseStatisticsDTO> getStatistics() {

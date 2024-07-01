@@ -16,6 +16,7 @@ import java.util.Locale;
 public class MemberDTO {
     private Long memberId;
     private String username;
+    private String name;
     private String password;
     private String email;
     private String socialType;
@@ -25,6 +26,7 @@ public class MemberDTO {
     public MemberDTO(Member member) {
         this.memberId = member.getId();
         this.username = member.getUsername();
+        this.name = member.getName();
         this.password = member.getPassword();
         this.email = member.getEmail();
         this.socialType = member.getSocialType();

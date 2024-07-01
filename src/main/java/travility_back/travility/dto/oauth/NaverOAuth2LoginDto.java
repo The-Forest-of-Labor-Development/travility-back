@@ -5,7 +5,7 @@ import travility_back.travility.entity.enums.Role;
 
 @Data
 public class NaverOAuth2LoginDto {
-    private String name;
     private String username;
+    private String name;
     private Role role;
 }

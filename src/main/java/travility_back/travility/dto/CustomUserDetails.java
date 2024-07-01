@@ -35,6 +35,10 @@ public class CustomUserDetails implements UserDetails {
         return memberDTO.getUsername();
     }
 
+    public String getName() {
+        return memberDTO.getName();
+    }
+
     @Override
     public boolean isAccountNonExpired() { //사용자 계정 만료 여부
         return true;

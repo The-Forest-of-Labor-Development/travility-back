@@ -13,7 +13,6 @@ public class CustomOAuthUser implements OAuth2User {
 
     private final NaverOAuth2LoginDto naverOAuth2LoginDto;
 
-
     @Override
     public Map<String, Object> getAttributes() {
         return null;

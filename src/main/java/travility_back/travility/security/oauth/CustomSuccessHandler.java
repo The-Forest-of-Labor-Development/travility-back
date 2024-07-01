@@ -28,6 +28,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuthUser customUserDetails = (CustomOAuthUser) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
+        String name = customUserDetails.getName();
 
         Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -38,7 +39,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             throw new IllegalArgumentException("Unknown role for user: " + username);
         }
 
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 1000L); // 유효기간 60분
+        String token = jwtUtil.createJwt(username, name, role, 60 * 60 * 1000L); // 유효기간 60분
 
         // 토큰 전달방법 : 쿠키 전달
         response.addCookie(createCookie("Authorization", token));

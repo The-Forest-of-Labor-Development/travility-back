@@ -58,8 +58,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (isAlreadyLogin.isEmpty()) {
 
             member.setUsername(username);
-            member.setEmail(oAuth2Response.getEmail());
             member.setName(oAuth2Response.getName());
+            member.setEmail(oAuth2Response.getEmail());
             member.setRole(Role.ROLE_USER);
             member.setCreatedDate(LocalDateTime.now());
             member.setAccessToken(accessToken);

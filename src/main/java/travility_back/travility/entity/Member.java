@@ -46,6 +46,7 @@ public class Member {
 
     public Member(MemberDTO memberDTO){
         this.username = memberDTO.getUsername();
+        this.name = memberDTO.getName();
         this.password = memberDTO.getPassword();
         this.email = memberDTO.getEmail();
         this.role = memberDTO.getRole();

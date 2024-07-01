@@ -53,7 +53,6 @@ public class MemberService {
         if (duplicateUsername(memberDTO.getUsername())) { //중복 확인
             throw new DuplicateKeyException("Duplicate username");
         }
-        System.out.println(memberDTO.getCreatedDate());
         String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
         memberDTO.setPassword(encodePassword);
         memberDTO.setCreatedDate(LocalDateTime.now());
@@ -69,6 +68,7 @@ public class MemberService {
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         Map<String, String> map = new HashMap<>();
         map.put("username", member.getUsername());
+        map.put("name", member.getName());
         map.put("email", member.getEmail());
         map.put("role", member.getRole().toString());
         map.put("socialType", member.getSocialType());

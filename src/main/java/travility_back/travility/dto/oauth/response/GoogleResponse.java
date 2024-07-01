@@ -28,4 +28,5 @@ public class GoogleResponse implements OAuth2Response {
     public String getName() {
         return attribute.get("name").toString();
     }
+
 }
