@@ -7,6 +7,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GoogleResponse implements OAuth2Response {
 
+    /**
+     * {@code GoogleResponse} 구글로부터 받은 사용자 정보 처리
+     */
+
     private final Map<String, Object> attribute;
 
     @Override

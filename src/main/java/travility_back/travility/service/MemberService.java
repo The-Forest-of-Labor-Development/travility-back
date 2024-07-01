@@ -1,5 +1,6 @@
 package travility_back.travility.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -156,5 +158,16 @@ public class MemberService {
         return (HttpStatus) responseEntity.getStatusCode();
     }
 
+    // 객체 갖고오기
+    public Member getMemberByUsername(String username) {
+        Optional<Member> member = memberRepository.findByUsername(username);
+        return member.orElseThrow(() -> new IllegalArgumentException("다음의 이름을 찾을 수 없음. : " + username));
+    }
 
+
+//    public Long findMemberId(String username) {
+//        Member member = memberRepository.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+//        return member.getId();
+//}
 }

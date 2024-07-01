@@ -8,21 +8,26 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import travility_back.travility.dto.oauth.CustomOAuthUser;
 import travility_back.travility.dto.oauth.NaverOAuth2LoginDto;
+import travility_back.travility.dto.oauth.KakaoOAuth2LoginDto;
 import travility_back.travility.dto.oauth.response.OAuth2Response;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.dto.oauth.response.GoogleResponse;
 import travility_back.travility.dto.oauth.response.NaverResponse;
+import travility_back.travility.dto.oauth.response.KakaoResponse;
 
-import java.security.AuthProvider;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
+// 사용자 정보 가져와서 db에 저장 / 갱신
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    /**
+     * {@code CustomOAuth2UserService} OAuth로부터 사용자 정보 가져와서 db에 저장 및 갱신
+     */
 
     private final MemberRepository memberRepository;
 
@@ -30,33 +35,34 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // 어떤 OAuth2 인지
         OAuth2Response oAuth2Response = null;
         Member member = new Member();
 
-        String accessToken = userRequest.getAccessToken().getTokenValue();
+        String accessToken = userRequest.getAccessToken().getTokenValue(); // OAuth2한테 받은 access token
 
+        // 회원 소셜타입 정하기
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes()); // 초기화
             member.setSocialType("naver");
-        }
-        else if (registrationId.equals("google")) {
+        } else if (registrationId.equals("google")) {
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes()); // 초기화
             member.setSocialType("google");
-        }
-        else {
-            return null;
+        } else if (registrationId.equals("kakao")) {
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes()); // 초기화
+            member.setSocialType("kakao");
+        } else {
+            throw new IllegalArgumentException("Unknown registrationId: " + registrationId);
         }
 
-        // 리소스 서버에서 발급받은 정보로 아이디값 만들기
+        // 사용자명 생성 : 공급자(GOOGLE, NAVER, KAKAO) + 사용자 ID
         String username = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
 
-        // 해당 유저가 이미 로그인 했는지
+        // 혹시 db에 사용자가 이미 있나?
         Optional<Member> isAlreadyLogin = memberRepository.findByUsername(username);
 
-        // 한번도 로그인하지 않아서 null인경우
+        // db에 사용자 없으면 새로 등록하기
         if (isAlreadyLogin.isEmpty()) {
-
             member.setUsername(username);
             member.setName(oAuth2Response.getName());
             member.setEmail(oAuth2Response.getEmail());
@@ -66,18 +72,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             memberRepository.save(member);
 
-            // dto에 저장
-            NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
-            naverDto.setUsername(username);
-            naverDto.setName(oAuth2Response.getName());
-            naverDto.setRole(Role.ROLE_USER);
+            // OAuth2 종류에 맞게 dto생성
+            if (registrationId.equals("naver")) {
+                NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
+                naverDto.setUsername(username);
+                naverDto.setName(oAuth2Response.getName());
+                naverDto.setRole(Role.ROLE_USER);
 
-            return new CustomOAuthUser(naverDto);
+                return new CustomOAuthUser(naverDto);
+            } else if (registrationId.equals("kakao")) {
+                KakaoOAuth2LoginDto kakaoDto = new KakaoOAuth2LoginDto();
+                kakaoDto.setUsername(username);
+                kakaoDto.setName(oAuth2Response.getName());
+                kakaoDto.setRole(Role.ROLE_USER);
 
-        }
-        // 한번이라도 로그인을 진행해서 데이터가 존재하는경우
-        else {
-            // 데이터를 업데이트해줘야함
+                return new CustomOAuthUser(kakaoDto);
+            } else {
+                return null;
+            }
+        } else { // 혹시 사용자가 db에 있으면 갱신
             Member existData = isAlreadyLogin.get();
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
@@ -85,15 +98,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             memberRepository.save(existData);
 
-            // dto에 저장
-            NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
-            naverDto.setUsername(username);
-            // name은 바뀐걸로 갖고와야해서 oAuth2Response에서 갖고옴
-            naverDto.setName(oAuth2Response.getName());
-            naverDto.setRole(existData.getRole());
-
-            return new CustomOAuthUser(naverDto);
-
+            // OAuth2 종류에 따라 dto 생성 후 반환
+            if (registrationId.equals("naver")) {
+                NaverOAuth2LoginDto naverDto = new NaverOAuth2LoginDto();
+                naverDto.setUsername(username);
+                naverDto.setName(oAuth2Response.getName());
+                naverDto.setRole(existData.getRole());
+                return new CustomOAuthUser(naverDto);
+            } else if (registrationId.equals("kakao")) {
+                KakaoOAuth2LoginDto kakaoDto = new KakaoOAuth2LoginDto();
+                kakaoDto.setUsername(username);
+                kakaoDto.setName(oAuth2Response.getName());
+                kakaoDto.setRole(existData.getRole());
+                return new CustomOAuthUser(kakaoDto);
+            } else {
+                return null;
+            }
         }
     }
 }
