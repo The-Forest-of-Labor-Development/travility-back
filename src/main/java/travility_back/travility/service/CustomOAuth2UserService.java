@@ -9,13 +9,10 @@ import org.springframework.stereotype.Service;
 import travility_back.travility.dto.oauth.CustomOAuthUser;
 import travility_back.travility.dto.oauth.NaverOAuth2LoginDto;
 import travility_back.travility.dto.oauth.KakaoOAuth2LoginDto;
-import travility_back.travility.dto.oauth.response.OAuth2Response;
+import travility_back.travility.dto.oauth.response.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
-import travility_back.travility.dto.oauth.response.GoogleResponse;
-import travility_back.travility.dto.oauth.response.NaverResponse;
-import travility_back.travility.dto.oauth.response.KakaoResponse;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -45,14 +42,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes()); // 초기화
             member.setSocialType("naver");
-        } else if (registrationId.equals("google")) {
+        }
+        else if (registrationId.equals("google")) {
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes()); // 초기화
             member.setSocialType("google");
-        } else if (registrationId.equals("kakao")) {
+        }
+        else if (registrationId.equals("kakao")) {
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes()); // 초기화
             member.setSocialType("kakao");
-        } else {
-            throw new IllegalArgumentException("Unknown registrationId: " + registrationId);
+        }
+        else {
+            throw new IllegalArgumentException("Unknown registrationId: " + registrationId); // 등록id 못찾음
         }
 
         // 사용자명 생성 : 공급자(GOOGLE, NAVER, KAKAO) + 사용자 ID
@@ -80,16 +80,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 naverDto.setRole(Role.ROLE_USER);
 
                 return new CustomOAuthUser(naverDto);
-            } else if (registrationId.equals("kakao")) {
+            }
+            else if (registrationId.equals("kakao")) {
                 KakaoOAuth2LoginDto kakaoDto = new KakaoOAuth2LoginDto();
                 kakaoDto.setUsername(username);
                 kakaoDto.setName(oAuth2Response.getName());
                 kakaoDto.setRole(Role.ROLE_USER);
 
                 return new CustomOAuthUser(kakaoDto);
-            } else {
-                return null;
             }
+            else if (registrationId.equals("google")) {
+                GoogleOAuth2LoginDto googleDto = new GoogleOAuth2LoginDto();
+                googleDto.setUsername(username);
+                googleDto.setName(oAuth2Response.getName());
+                googleDto.setRole(Role.ROLE_USER);
+
+                return new CustomOAuthUser(googleDto);
+            }
+
         } else { // 혹시 사용자가 db에 있으면 갱신
             Member existData = isAlreadyLogin.get();
             existData.setEmail(oAuth2Response.getEmail());
@@ -111,9 +119,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 kakaoDto.setName(oAuth2Response.getName());
                 kakaoDto.setRole(existData.getRole());
                 return new CustomOAuthUser(kakaoDto);
-            } else {
-                return null;
+            } else if (registrationId.equals("google")) {
+                GoogleOAuth2LoginDto googleDto = new GoogleOAuth2LoginDto();
+                googleDto.setUsername(username);
+                googleDto.setName(oAuth2Response.getName());
+                googleDto.setRole(existData.getRole());
+                return new CustomOAuthUser(googleDto);
             }
         }
+        return null;
     }
 }
