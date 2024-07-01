@@ -40,7 +40,4 @@ public class Budget {
         this.accountBook = accountBook;
     }
 
-    public BudgetDTO toDTO() {
-        return new BudgetDTO(id, isShared, curUnit, exchangeRate, amount);
-    }
 }

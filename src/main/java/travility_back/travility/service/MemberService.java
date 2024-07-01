@@ -3,6 +3,7 @@ package travility_back.travility.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import travility_back.travility.repository.MemberRepository;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,13 @@ public class MemberService {
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
+    @Transactional
+    public Long findMemberId(String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("User not found with username: " + username));
+        return member.getId();
+    }
+
     //아이디 중복 확인
     @Transactional
     public boolean duplicateUsername(String username) {
@@ -44,7 +52,7 @@ public class MemberService {
     @Transactional
     public void signup(MemberDTO memberDTO) {
         if (duplicateUsername(memberDTO.getUsername())) { //중복 확인
-            throw new IllegalArgumentException("Duplicate username");
+            throw new DuplicateKeyException("Duplicate username");
         }
         System.out.println(memberDTO.getCreatedDate());
         String encodePassword = bCryptPasswordEncoder.encode(memberDTO.getPassword());
@@ -57,91 +65,74 @@ public class MemberService {
     }
 
     //회원 정보
-    @Transactional
-    public Map<String, String> getMemberInfo(CustomUserDetails member) {
-        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
+    @Transactional(readOnly = true)
+    public Map<String, String> getMemberInfo(CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
         Map<String, String> map = new HashMap<>();
-        if (data.isPresent()) {
-            map.put("username", member.getUsername());
-            map.put("email", data.get().getEmail());
-            map.put("role", data.get().getRole().toString());
-            map.put("socialType", data.get().getSocialType());
-            map.put("createdDate", data.get().getCreatedDate().toString());
-        } else {
-            throw new IllegalArgumentException("User not found");
-        }
+        map.put("username", member.getUsername());
+        map.put("email", member.getEmail());
+        map.put("role", member.getRole().toString());
+        map.put("socialType", member.getSocialType());
+        map.put("createdDate", member.getCreatedDate().toString());
         return map;
     }
 
     //일반 회원 탈퇴
     @Transactional
-    public void deleteStandardAccount(CustomUserDetails member) {
-        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
-        if (data.isPresent()) {
-            memberRepository.delete(data.get());
-        } else {
-            throw new IllegalArgumentException("User not found");
-        }
+    public void deleteStandardAccount(CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        memberRepository.deleteById(member.getId());
     }
 
     //네이버 회원 탈퇴
     @Transactional
-    public void deleteNaverAccount(CustomUserDetails member) {
-        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
-        if (data.isPresent()) {
-            String requestUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete" +
-                    "&client_id=" + naverClientId +
-                    "&client_secret=" + naverClientSecret +
-                    "&access_token=" + data.get().getAccessToken() +
-                    "&service_provider=NAVER";
-            try {
-                sendRevokeRequest(requestUrl, "NAVER", null);
-                memberRepository.delete(data.get());
-            } catch (HttpClientErrorException e) {
-                throw new IllegalStateException("Failed to revoke token for provider: NAVER");
-            }
-
-        } else {
-            throw new IllegalArgumentException("User not found");
+    public void deleteNaverAccount(CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        String requestUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete" +
+                "&client_id=" + naverClientId +
+                "&client_secret=" + naverClientSecret +
+                "&access_token=" + member.getAccessToken() +
+                "&service_provider=NAVER";
+        try {
+            sendRevokeRequest(requestUrl, "NAVER", null);
+            memberRepository.deleteById(member.getId());
+        } catch (HttpClientErrorException e) {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     //구글 회원 탈퇴
     @Transactional
-    public void deleteGoogleAccount(CustomUserDetails member) {
-        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
-        if (data.isPresent()) {
-            String requestUrl = "https://accounts.google.com/o/oauth2/revoke?token=" + data.get().getAccessToken();
-            try {
-                sendRevokeRequest(requestUrl, "GOOGLE", null);
-                memberRepository.delete(data.get());
-            } catch (HttpClientErrorException e) {
-                throw new IllegalStateException("Failed to revoke token for provider: GOOGLE");
-            }
-        } else {
-            throw new IllegalArgumentException("User not found");
+    public void deleteGoogleAccount(CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        String requestUrl = "https://accounts.google.com/o/oauth2/revoke?token=" + member.getAccessToken();
+        try {
+            sendRevokeRequest(requestUrl, "GOOGLE", null);
+            memberRepository.deleteById(member.getId());
+        } catch (HttpClientErrorException e) {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
     //카카오 회원 탈퇴
     @Transactional
-    public void deleteKakaoAccount(CustomUserDetails member) { //카카오만 헤더에 액세스 토큰 담아서 전달
-        Optional<Member> data = memberRepository.findByUsername(member.getUsername());
-        if (data.isPresent()) {
-            String requestUrl = "https://kapi.kakao.com/v1/user/unlink";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(data.get().getAccessToken()); //Authorization: Bearer abc123
+    public void deleteKakaoAccount(CustomUserDetails userDetails) { //카카오만 헤더에 액세스 토큰 담아서 전달
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
 
-            try {
-                sendRevokeRequest(requestUrl, "KAKAO", headers);
-                memberRepository.delete(data.get());
-            } catch (HttpClientErrorException e) {
-                throw new IllegalStateException("Failed to revoke token for provider: KAKAO");
-            }
-        } else {
-            throw new IllegalArgumentException("User not found");
+        String requestUrl = "https://kapi.kakao.com/v1/user/unlink";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(member.getAccessToken()); //Authorization: Bearer abc123
+
+        try {
+            sendRevokeRequest(requestUrl, "KAKAO", headers);
+            memberRepository.deleteById(member.getId());
+        } catch (HttpClientErrorException e) {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
+
     }
 
     //서비스 제공자에 회원 탈퇴 요청
