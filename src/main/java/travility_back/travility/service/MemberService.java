@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -164,9 +165,9 @@ public class MemberService {
     }
 
 
-    public Long findMemberId(String username) {
-        Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
-        return member.getId();
-    }
+//    public Long findMemberId(String username) {
+//        Member member = memberRepository.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+//        return member.getId();
+//}
 }

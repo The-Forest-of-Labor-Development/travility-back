@@ -15,6 +15,7 @@ public interface AccountBookRepository extends JpaRepository<AccountBook, Long> 
 
     @Query("select a from AccountBook a where a.member.id = :memberId")
     List<AccountBook> findByMemberId(@Param("memberId") Long memberId);
+
     @Query("select ab.countryName from AccountBook ab group by ab.countryName order by count(ab) desc")
     List<String> findTop5TravelDestination(Pageable pageable);
     List<AccountBook> findByMember(Member member);

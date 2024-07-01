@@ -21,23 +21,24 @@ public class AccountBookController {
     private final AccountBookService accountBookService;
     private final MemberService memberService;
 
+    //전체 가계부 조회
     @GetMapping("/accountbooks")
-    public List<AccountBookDTO> getAllAccountBooks() {
-        return accountBookService.getAllAccountBooks();
+    public List<AccountBookDTO> getAllAccountBooks(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return accountBookService.getAllAccountBooks(username);
     }
 
     @GetMapping("/{id}")
     public Optional<AccountBookDTO> getAccountBookById(@PathVariable("id") Long id) {
-        return accountBookService.getAccountBookById(id);
+        return Optional.ofNullable(accountBookService.getAccountBookById(id));
     }
 
+    //가계부 등록
     @PostMapping
     public AccountBookDTO createAccountBook(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @RequestBody AccountBookDTO accountBookDTO) {
         String username = userDetails.getUsername();
-        Long memberId = memberService.findMemberId(username);
-        accountBookDTO.getMember().setId(memberId);
-        return accountBookService.saveAccountBook(accountBookDTO);
+        return accountBookService.createAccountBook(accountBookDTO, username);
     }
 
     //가계부 정보 수정

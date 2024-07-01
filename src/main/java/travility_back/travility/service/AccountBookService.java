@@ -1,8 +1,12 @@
 package travility_back.travility.service;
 
-import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import travility_back.travility.dto.AccountBookDTO;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.entity.AccountBook;
@@ -11,8 +15,12 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.MemberRepository;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,13 +58,13 @@ public class AccountBookService {
         return new AccountBookDTO(accountBook);
     }
 
-    //가계부 삭제
-    @Transactional
-    public AccountBookDTO saveAccountBook(AccountBookDTO accountBookDTO) {
-        AccountBook accountBook = convertToEntity(accountBookDTO);
-        accountBook = accountBookRepository.save(accountBook);
-        return convertToDTO(accountBook);
-    }
+//    //가계부 삭제
+//    @Transactional
+//    public AccountBookDTO saveAccountBook(AccountBookDTO accountBookDTO) {
+//        AccountBook accountBook = convertToEntity(accountBookDTO);
+//        accountBook = accountBookRepository.save(accountBook);
+//        return convertToDTO(accountBook);
+//    }
 
     public void deleteAccountBook(Long id) {
         accountBookRepository.deleteById(id);

@@ -19,7 +19,6 @@ public class KakaoResponse implements OAuth2Response {
 
     private final Map<String, Object> attribute;
     private final Map<String, Object> kakaoAccount;
-
     private final Map<String, Object> profile;
 
     @Override
