@@ -3,6 +3,7 @@ package travility_back.travility.dto.oauth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import travility_back.travility.dto.oauth.response.GoogleOAuth2LoginDto;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,12 +21,14 @@ public class CustomOAuthUser implements OAuth2User {
      */
     private final NaverOAuth2LoginDto naverOAuth2LoginDto; // naver
     private final KakaoOAuth2LoginDto kakaoOAuth2LoginDto; // kakao
+    private final GoogleOAuth2LoginDto googleOAuth2LoginDto; // google
     private final String provider; // 사용자가 뭘로 로그인 인증했는지 저장하는거.
 
     // 네이버 로그인 생성자
     public CustomOAuthUser(NaverOAuth2LoginDto naverOAuth2LoginDto) {
         this.naverOAuth2LoginDto = naverOAuth2LoginDto; // 네이버 로그인이니까 공급자는 네이버
         this.kakaoOAuth2LoginDto = null; // 카카오는 설정안함
+        this.googleOAuth2LoginDto = null; // 구글은 설정안함
         this.provider = "naver";
     }
 
@@ -33,7 +36,16 @@ public class CustomOAuthUser implements OAuth2User {
     public CustomOAuthUser(KakaoOAuth2LoginDto kakaoOAuth2LoginDto) {
         this.naverOAuth2LoginDto = null;
         this.kakaoOAuth2LoginDto = kakaoOAuth2LoginDto;
+        this.googleOAuth2LoginDto = null; // 구글은 설정안함
         this.provider = "kakao";
+    }
+
+    // 구글 로그인 생성자
+    public CustomOAuthUser(GoogleOAuth2LoginDto googleOAuth2LoginDto) {
+        this.naverOAuth2LoginDto = null;
+        this.kakaoOAuth2LoginDto = null;
+        this.googleOAuth2LoginDto = googleOAuth2LoginDto;
+        this.provider = "google";
     }
 
     // 사용자 속성 반환 (사용안함)
@@ -55,6 +67,9 @@ public class CustomOAuthUser implements OAuth2User {
                 else if ("kakao".equals(provider)) {
                     return kakaoOAuth2LoginDto.getRole().name();
                 }
+                else if ("google".equals(provider)) {
+                    return googleOAuth2LoginDto.getRole().name();
+                }
                 return null;
             }
         });
@@ -71,6 +86,9 @@ public class CustomOAuthUser implements OAuth2User {
         else if ("kakao".equals(provider)) {
             return kakaoOAuth2LoginDto.getName();
         }
+        else if ("google".equals(provider)) {
+            return googleOAuth2LoginDto.getName();
+        }
         return null;
     }
 
@@ -81,6 +99,9 @@ public class CustomOAuthUser implements OAuth2User {
         }
         else if ("kakao".equals(provider)) {
             return kakaoOAuth2LoginDto.getUsername();
+        }
+        else if ("google".equals(provider)) {
+            return googleOAuth2LoginDto.getUsername();
         }
         return null;
     }
