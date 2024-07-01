@@ -53,14 +53,14 @@ public class JWTUtil { //JWT 토큰 생성, 검증 메소드 클래스
         }
     }
 
-    public String createJwt(String username, String nickname, String role, Long expiredMs){
+    public String createJwt(String username, String name, String role, Long expiredMs){
         Date date = new Date();
         Date tokenExpiryDate = new Date(date.getTime() + expiredMs);
 
         System.out.println(tokenExpiryDate);
         return Jwts.builder() //JWT 생성하기 위한 빌더 객체 반환. 아래는 설정들.
                 .claim("username", username) //클레임 설정. username
-                .claim("nickname", nickname) //클레임 설정. username
+                .claim("nickname", name) //클레임 설정. username
                 .claim("role", role) //클레임 설정. role
                 .issuedAt(date) //토큰 발급 시간
                 .expiration(tokenExpiryDate) //토큰 만료 시간
