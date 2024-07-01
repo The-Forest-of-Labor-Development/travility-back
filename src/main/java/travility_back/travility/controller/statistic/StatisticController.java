@@ -9,18 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import travility_back.travility.dto.statistics.MyReportExpenseStatisticsDTO;
 import travility_back.travility.entity.Member;
-import travility_back.travility.service.statistic.ExpenseService;
+import travility_back.travility.service.statistic.StatisticService;
 
 @RestController
 @RequestMapping("/api/accountbook")
 @RequiredArgsConstructor
-public class ExpenseController {
+public class StatisticController {
 
-    private final ExpenseService expenseService;
+    private final StatisticService statisticService;
 
     @GetMapping("/detail")
     public ResponseEntity<MyReportExpenseStatisticsDTO> getStatistics() {
-        MyReportExpenseStatisticsDTO statisticsDto = expenseService.getStatistics();
+        MyReportExpenseStatisticsDTO statisticsDto = statisticService.getStatistics();
         return ResponseEntity.ok(statisticsDto);
     }
 
@@ -28,7 +28,7 @@ public class ExpenseController {
     public ResponseEntity<Member> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        Member member = expenseService.getMemberByUsername(username);
+        Member member = statisticService.getMemberByUsername(username);
         return ResponseEntity.ok(member);
     }
 }

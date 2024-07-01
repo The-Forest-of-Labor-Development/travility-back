@@ -7,9 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import travility_back.travility.dto.AccountBookDTO;
 import travility_back.travility.dto.CustomUserDetails;
 import travility_back.travility.service.AccountBookService;
+import travility_back.travility.service.MemberService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/accountbook")
@@ -17,14 +19,7 @@ import java.util.List;
 public class AccountBookController {
 
     private final AccountBookService accountBookService;
-
-    //가계부 등록
-    @PostMapping
-    public AccountBookDTO createAccountBook(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                            @RequestBody AccountBookDTO accountBookDTO) {
-        String username = userDetails.getUsername();
-        return accountBookService.createAccountBook(accountBookDTO, username);
-    }
+    private final MemberService memberService;
 
     //전체 가계부 조회
     @GetMapping("/accountbooks")
@@ -33,10 +28,17 @@ public class AccountBookController {
         return accountBookService.getAllAccountBooks(username);
     }
 
-    //가계부 조회
     @GetMapping("/{id}")
-    public AccountBookDTO getAccountBookById(@PathVariable Long id) {
-        return accountBookService.getAccountBookById(id);
+    public Optional<AccountBookDTO> getAccountBookById(@PathVariable("id") Long id) {
+        return Optional.ofNullable(accountBookService.getAccountBookById(id));
+    }
+
+    //가계부 등록
+    @PostMapping
+    public AccountBookDTO createAccountBook(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @RequestBody AccountBookDTO accountBookDTO) {
+        String username = userDetails.getUsername();
+        return accountBookService.createAccountBook(accountBookDTO, username);
     }
 
     //가계부 정보 수정

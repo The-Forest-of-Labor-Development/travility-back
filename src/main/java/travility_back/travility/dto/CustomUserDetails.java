@@ -54,4 +54,8 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() { //사용자 활성화 여부
         return true;
     }
+
+    public MemberDTO getMemberDTO() {
+        return memberDTO;
+    }
 }

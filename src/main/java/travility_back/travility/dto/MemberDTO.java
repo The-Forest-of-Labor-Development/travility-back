@@ -14,7 +14,7 @@ import java.util.Locale;
 @Setter
 @NoArgsConstructor
 public class MemberDTO {
-    private Long memberId;
+    private Long id;
     private String username;
     private String password;
     private String email;
@@ -23,7 +23,7 @@ public class MemberDTO {
     private Role role;
 
     public MemberDTO(Member member) {
-        this.memberId = member.getId();
+        this.id = member.getId();
         this.username = member.getUsername();
         this.password = member.getPassword();
         this.email = member.getEmail();

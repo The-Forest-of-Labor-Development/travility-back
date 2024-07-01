@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ExpenseService {
+public class StatisticService {
 
     private final ExpenseRepository expenseRepository;
     private final MemberRepository memberRepository;

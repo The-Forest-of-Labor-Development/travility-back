@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class NaverResponse implements OAuth2Response {
 
+    /**
+     * {@code NaverResponse} 네이버로부터 받은 사용자 정보 처리
+     */
+
     private final Map<String, Object> attribute;
 
     // 생성자

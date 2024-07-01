@@ -81,9 +81,9 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth)->auth
-                                .requestMatchers("/","/api/auth/**","/api/login", "/api/logout","/api/signup","/images/**").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
+                        .requestMatchers("/","/api/auth/**","/api/login", "/api/logout","/api/signup").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
 
         http.exceptionHandling((exception)-> exception
