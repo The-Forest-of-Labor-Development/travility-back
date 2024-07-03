@@ -28,6 +28,7 @@ public class AccountBookController {
         return accountBookService.getAllAccountBooks(username);
     }
 
+    //가계부 조회
     @GetMapping("/{id}")
     public Optional<AccountBookDTO> getAccountBookById(@PathVariable("id") Long id) {
         return Optional.ofNullable(accountBookService.getAccountBookById(id));

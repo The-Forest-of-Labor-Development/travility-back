@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -24,7 +27,7 @@ public class Expense {
     private String title; // 항목명
 
     @Column(nullable = false)
-    private Date expenseDate; // 지출일자
+    private LocalDateTime expenseDate; // 지출일자
 
     @Column(nullable = false)
     private double amount; // 지출금액
@@ -47,4 +50,16 @@ public class Expense {
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]
 
     private String curUnit; // 화폐 단위
+
+    public Expense(ExpenseDTO expenseDTO, AccountBook accountBook) {
+        this.title = expenseDTO.getTitle();
+        this.expenseDate = expenseDTO.getExpenseDate();
+        this.amount = expenseDTO.getAmount();
+        this.isShared = expenseDTO.isShared();
+        this.memo = expenseDTO.getMemo();
+        this.accountBook = accountBook;
+        this.paymentMethod = expenseDTO.getPaymentMethod();
+        this.category = expenseDTO.getCategory();
+        this.curUnit = expenseDTO.getCurUnit();
+    }
 }

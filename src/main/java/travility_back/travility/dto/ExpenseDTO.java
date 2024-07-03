@@ -1,5 +1,6 @@
 package travility_back.travility.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,8 +17,9 @@ import java.util.Date;
 public class ExpenseDTO {
     private Long id;
     private String title;
-    private Date expenseDate;
+    private LocalDateTime expenseDate;
     private double amount;
+    @JsonProperty("isShared")
     private boolean isShared;
     private String imgName;
     private String memo;
