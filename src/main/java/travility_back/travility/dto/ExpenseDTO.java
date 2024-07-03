@@ -1,5 +1,6 @@
 package travility_back.travility.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.Date;
 public class ExpenseDTO {
     private Long id;
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone ="Asia/Seoul")
     private LocalDateTime expenseDate;
     private double amount;
     @JsonProperty("isShared")

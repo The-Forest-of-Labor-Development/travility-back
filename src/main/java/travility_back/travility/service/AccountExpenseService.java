@@ -105,7 +105,7 @@ public class AccountExpenseService {
         try {
             expenseDTO = objectMapper.readValue(expenseInfo, ExpenseDTO.class);
         } catch (IOException e){
-            throw new IllegalArgumentException("Invalid expenseInfo format");
+            throw new IllegalArgumentException("Invalid expenseInfo format", e);
         }
 
         if(img != null && !img.isEmpty()){
