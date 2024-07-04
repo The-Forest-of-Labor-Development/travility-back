@@ -42,5 +42,5 @@ public class CalendarController {
         List<Expense> expenses = calendarService.getAllExpensesByAccountBookId(accountBookId);
         return ResponseEntity.ok(expenses);
     }
-
+    
 }
