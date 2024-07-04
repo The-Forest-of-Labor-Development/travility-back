@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import travility_back.travility.entity.Expense;
+import travility_back.travility.entity.enums.Role;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
@@ -23,6 +26,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
 
+    List<Expense> findByAccountBookId(Long accountbookId);
+
+    @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.accountBook.id=:accountbookId and e.expenseDate BETWEEN :startDate AND :endDate")
+    Double findTotalAmountByDateRange(@Param("accountbookId") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 
 
