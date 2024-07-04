@@ -1,7 +1,7 @@
 package travility_back.travility.controller.schedule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+//import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,5 +42,5 @@ public class CalendarController {
         List<Expense> expenses = calendarService.getAllExpensesByAccountBookId(accountBookId);
         return ResponseEntity.ok(expenses);
     }
-    
+
 }
