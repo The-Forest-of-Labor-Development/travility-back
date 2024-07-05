@@ -69,6 +69,7 @@ public class CalendarService {
         return new ArrayList<>(uniqueEvents.values());
     }
 
+
     public Map<LocalDate, Double> getExpenseByDay(Long id) {
 
         //id로 가계부 찾기
@@ -86,9 +87,15 @@ public class CalendarService {
             LocalDateTime start = startDate.atStartOfDay(); //현재 날짜 시작 00:00:00
             LocalDateTime end = startDate.plusDays(1).atStartOfDay(); //내일 날짜 시작 00:00:00
             Double sum = expenseRepository.findTotalAmountByDateRange(id, start, end); //해당 날짜의 총합 가져오기
-            map.put(startDate, sum); //추가 //2024-07-04 320000  //2024-07-05 400000
+            map.put(startDate, sum != null ? sum : 0.0); //추가 //2024-07-04 320000  //2024-07-05 400000
             startDate = startDate.plusDays(1);
         }
         return map;
     }
+
+    // accountbookId 로 모든 expense 가져오기
+    public List<Expense> getAllExpensesByAccountBookId(Long accountBookId) {
+        return expenseRepository.findByAccountBookId(accountBookId);
+    }
+
 }
