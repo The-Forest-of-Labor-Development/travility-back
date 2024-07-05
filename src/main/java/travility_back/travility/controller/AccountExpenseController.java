@@ -27,7 +27,13 @@ public class AccountExpenseController {
 
     //지출 수정
     @PutMapping("/{id}")
-    public void updateExpense(@PathVariable Long id, @RequestPart(value = "expense") String expenseInfo, @RequestPart(value = "img", required = false) MultipartFile img) throws IOException {
+    public void updateExpense(@PathVariable Long id, @RequestPart(value = "expenseInfo") String expenseInfo, @RequestPart(value = "img", required = false) MultipartFile img) throws IOException {
         accountExpenseService.updateExpense(id, expenseInfo, img);
+    }
+
+    //지출 삭제
+    @DeleteMapping("/{id}")
+    public void deleteExpense(@PathVariable Long id) {
+        accountExpenseService.deleteExpense(id);
     }
 }

@@ -97,7 +97,7 @@ public class AccountBookService {
             img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
 
             //기존 이미지 파일 삭제
-            if(accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
+            if(!originalName.equals("default_image.png") && accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
                 File oldImg = new File(path,accountBook.getImgName());
                 if (oldImg.exists()){
                     oldImg.delete();
@@ -114,45 +114,4 @@ public class AccountBookService {
         accountBook.setStartDate(accountBookDTO.getStartDate());
         accountBook.setEndDate(accountBookDTO.getEndDate());
     }
-
-//    private AccountBookDTO convertToDTO(AccountBook accountBook) {
-//        AccountBookDTO dto = new AccountBookDTO();
-//        dto.setId(accountBook.getId());
-//        dto.setStartDate(accountBook.getStartDate());
-//        dto.setEndDate(accountBook.getEndDate());
-//        dto.setCountryName(accountBook.getCountryName());
-//        dto.setCountryFlag(accountBook.getCountryFlag());
-//        dto.setImgName(accountBook.getImgName());
-//        dto.setNumberOfPeople(accountBook.getNumberOfPeople());
-//        dto.setTitle(accountBook.getTitle());
-//        dto.setBudgets(accountBook.getBudgets().stream()
-//                .map(Budget::toDTO)
-//                .collect(Collectors.toList()));
-//        dto.setMember(new MemberDTO(accountBook.getMember()));
-//        return dto;
-//    }
-//
-//    private AccountBook convertToEntity(AccountBookDTO accountBookDTO) {
-//        AccountBook accountBook = new AccountBook();
-//        accountBook.setId(accountBookDTO.getId());
-//        accountBook.setStartDate(accountBookDTO.getStartDate());
-//        accountBook.setEndDate(accountBookDTO.getEndDate());
-//        accountBook.setCountryName(accountBookDTO.getCountryName());
-//        accountBook.setCountryFlag(accountBookDTO.getCountryFlag());
-//        accountBook.setNumberOfPeople(accountBookDTO.getNumberOfPeople());
-//        accountBook.setTitle(accountBookDTO.getTitle());
-//        accountBook.setImgName("default_image.png");
-//        accountBook.setBudgets(accountBookDTO.getBudgets().stream()
-//                .map(budgetDTO -> new Budget(budgetDTO, accountBook))
-//                .collect(Collectors.toList()));
-//
-//        MemberDTO memberDTO = accountBookDTO.getMember();
-//        if (memberDTO != null) {
-//            Member member = memberRepository.findById(memberDTO.getMemberId())
-//                    .orElseThrow(() -> new RuntimeException("User not found with id: " + memberDTO.getMemberId()));
-//            accountBook.setMember(member);
-//        }
-//
-//        return accountBook;
-//    }
 }

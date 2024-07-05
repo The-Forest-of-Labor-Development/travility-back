@@ -54,12 +54,12 @@ public class Expense {
     public Expense(ExpenseDTO expenseDTO, AccountBook accountBook) {
         this.title = expenseDTO.getTitle();
         this.expenseDate = expenseDTO.getExpenseDate();
+        this.category = expenseDTO.getCategory();
+        this.paymentMethod = expenseDTO.getPaymentMethod();
+        this.curUnit = expenseDTO.getCurUnit();
         this.amount = expenseDTO.getAmount();
         this.isShared = expenseDTO.isShared();
         this.memo = expenseDTO.getMemo();
         this.accountBook = accountBook;
-        this.paymentMethod = expenseDTO.getPaymentMethod();
-        this.category = expenseDTO.getCategory();
-        this.curUnit = expenseDTO.getCurUnit();
     }
 }

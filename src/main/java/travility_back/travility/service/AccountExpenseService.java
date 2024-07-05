@@ -27,28 +27,6 @@ public class AccountExpenseService {
     private final AccountBookRepository accountBookRepository;
 
     //지출 등록
-//    @Transactional
-//    public ExpenseDTO createExpense(ExpenseDTO expenseDTO) {
-//        AccountBook accountBook = accountBookRepository.findById(expenseDTO.getAccountBookId())
-//                .orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
-//
-//        Expense expense = new Expense();
-//        expense.setTitle(expenseDTO.getTitle());
-//        expense.setExpenseDate(expenseDTO.getExpenseDate());
-//        expense.setAmount(expenseDTO.getAmount());
-//        expense.setShared(expenseDTO.isShared());
-//        expense.setImgName(expenseDTO.getImgName());
-//        expense.setMemo(expenseDTO.getMemo());
-//        expense.setAccountBook(accountBook);
-//        expense.setPaymentMethod(expenseDTO.getPaymentMethod());
-//        expense.setCategory(expenseDTO.getCategory());
-//        expense.setCurUnit(expenseDTO.getCurUnit());
-//
-//        Expense savedExpense = expenseRepository.save(expense);
-//
-//        expenseDTO.setId(savedExpense.getId());
-//        return expenseDTO;
-//    }
     @Transactional
     public ExpenseDTO createExpense(String expenseInfo, MultipartFile img) throws IOException {
         //역직렬화
@@ -117,7 +95,7 @@ public class AccountExpenseService {
             img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
 
             //기존 이미지 파일 삭제
-            if(expense.getImgName() != null && !expense.getImgName().isEmpty()){
+            if(!originalName.equals("default_image.png") && expense.getImgName() != null && !expense.getImgName().isEmpty()){
                 File oldImg = new File(path,expense.getImgName());
                 if (oldImg.exists()){
                     oldImg.delete();
@@ -129,7 +107,17 @@ public class AccountExpenseService {
         //수정
         expense.setTitle(expenseDTO.getTitle());
         expense.setExpenseDate(expenseDTO.getExpenseDate());
+        expense.setCategory(expenseDTO.getCategory());
+        expense.setPaymentMethod(expenseDTO.getPaymentMethod());
         expense.setAmount(expenseDTO.getAmount());
+        expense.setCurUnit(expenseDTO.getCurUnit());
         expense.setShared(expenseDTO.isShared());
+        expense.setMemo(expenseDTO.getMemo());
+    }
+
+    //지출 삭제
+    @Transactional
+    public void deleteExpense(Long id){
+        expenseRepository.deleteById(id);
     }
 }
