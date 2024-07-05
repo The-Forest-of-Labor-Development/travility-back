@@ -93,7 +93,7 @@ public class CalendarService {
         return map;
     }
 
-    // accountbookId로 모든 expense 가져오기
+    // accountbookId 로 모든 expense 가져오기
     public List<Expense> getAllExpensesByAccountBookId(Long accountBookId) {
         return expenseRepository.findByAccountBookId(accountBookId);
     }
