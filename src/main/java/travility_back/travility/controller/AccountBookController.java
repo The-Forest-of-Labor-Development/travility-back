@@ -19,7 +19,6 @@ import java.util.Optional;
 public class AccountBookController {
 
     private final AccountBookService accountBookService;
-    private final MemberService memberService;
 
     //전체 가계부 조회
     @GetMapping("/accountbooks")
@@ -53,5 +52,4 @@ public class AccountBookController {
     public void deleteAccountBook(@PathVariable Long id) {
         accountBookService.deleteAccountBook(id);
     }
-
 }

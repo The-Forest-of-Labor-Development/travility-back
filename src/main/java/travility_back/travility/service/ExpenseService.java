@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import travility_back.travility.dto.AccountBookDTO;
 import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Expense;
@@ -16,12 +15,14 @@ import travility_back.travility.repository.ExpenseRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AccountExpenseService {
+public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final AccountBookRepository accountBookRepository;
@@ -119,5 +120,24 @@ public class AccountExpenseService {
     @Transactional
     public void deleteExpense(Long id){
         expenseRepository.deleteById(id);
+    }
+
+    //공동 경비 정산
+    @Transactional(readOnly = true)
+    public Map<String, Double> settleSharedExpenses(Long id){
+        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
+        int numberOfPeple = accountBook.getNumberOfPeople(); //인원수
+
+        //공동 경비 합계
+        double totalSharedExpense = expenseRepository.findTotalSharedExpensesByAccountBookId(id);
+
+        //1인당 정산 금액
+        double perPersonExpense = totalSharedExpense / numberOfPeple;
+
+        Map<String, Double> map = new HashMap<>();
+        map.put("totalSharedExpense", totalSharedExpense);
+        map.put("perPersonExpense", perPersonExpense);
+
+        return map;
     }
 }

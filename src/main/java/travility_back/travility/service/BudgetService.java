@@ -41,14 +41,4 @@ public class BudgetService {
                 .map(budget -> new BudgetDTO(budget))
                 .collect(Collectors.toList());
     }
-
-//    private BudgetDTO convertToDTO(Budget budget) {
-//        return new BudgetDTO(
-//                budget.getId(),
-//                budget.isShared(),
-//                budget.getCurUnit(),
-//                budget.getExchangeRate(),
-//                budget.getAmount()
-//        );
-//    }
 }

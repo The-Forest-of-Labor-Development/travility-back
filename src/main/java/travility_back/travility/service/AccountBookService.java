@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import travility_back.travility.dto.AccountBookDTO;
-import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.entity.AccountBook;
-import travility_back.travility.entity.Budget;
 import travility_back.travility.entity.Member;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.MemberRepository;
@@ -19,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,7 +25,6 @@ import java.util.stream.Collectors;
 public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
-    private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     //가계부 전체 조회
@@ -56,18 +52,6 @@ public class AccountBookService {
         accountBook.setImgName("default_image.png");
         accountBookRepository.save(accountBook);
         return new AccountBookDTO(accountBook);
-    }
-
-//    //가계부 삭제
-//    @Transactional
-//    public AccountBookDTO saveAccountBook(AccountBookDTO accountBookDTO) {
-//        AccountBook accountBook = convertToEntity(accountBookDTO);
-//        accountBook = accountBookRepository.save(accountBook);
-//        return convertToDTO(accountBook);
-//    }
-
-    public void deleteAccountBook(Long id) {
-        accountBookRepository.deleteById(id);
     }
 
     //가계부 수정
@@ -113,5 +97,11 @@ public class AccountBookService {
         accountBook.setNumberOfPeople(accountBookDTO.getNumberOfPeople());
         accountBook.setStartDate(accountBookDTO.getStartDate());
         accountBook.setEndDate(accountBookDTO.getEndDate());
+    }
+
+    //가계부 삭제
+    @Transactional
+    public void deleteAccountBook(Long id) {
+        accountBookRepository.deleteById(id);
     }
 }

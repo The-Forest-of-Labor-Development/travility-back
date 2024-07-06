@@ -31,6 +31,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.accountBook.id=:accountbookId and e.expenseDate BETWEEN :startDate AND :endDate")
     Double findTotalAmountByDateRange(@Param("accountbookId") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
+    @Query("select sum(e.amount) from Expense e where e.accountBook.id=:accountBookId and e.isShared = true")
+    Double findTotalSharedExpensesByAccountBookId(@Param("accountBookId")Long id);
 
 
 
