@@ -33,10 +33,4 @@ public class ExpenseController {
     public void deleteExpense(@PathVariable Long id) {
         expenseService.deleteExpense(id);
     }
-
-    //공동 경비 정산
-    @GetMapping("/settlement/{id}")
-    public Map<String, Double> settleSharedExpenses(@PathVariable Long id){
-        return expenseService.settleSharedExpenses(id);
-    }
 }

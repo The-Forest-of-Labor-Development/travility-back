@@ -15,8 +15,6 @@ import travility_back.travility.repository.ExpenseRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -120,24 +118,5 @@ public class ExpenseService {
     @Transactional
     public void deleteExpense(Long id){
         expenseRepository.deleteById(id);
-    }
-
-    //공동 경비 정산
-    @Transactional(readOnly = true)
-    public Map<String, Double> settleSharedExpenses(Long id){
-        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
-        int numberOfPeple = accountBook.getNumberOfPeople(); //인원수
-
-        //공동 경비 합계
-        double totalSharedExpense = expenseRepository.findTotalSharedExpensesByAccountBookId(id);
-
-        //1인당 정산 금액
-        double perPersonExpense = totalSharedExpense / numberOfPeple;
-
-        Map<String, Double> map = new HashMap<>();
-        map.put("totalSharedExpense", totalSharedExpense);
-        map.put("perPersonExpense", perPersonExpense);
-
-        return map;
     }
 }
