@@ -22,7 +22,7 @@ public class BudgetService {
 
     //예산 등록
     @Transactional
-    public List<BudgetDTO> createBudgets(Long accountBookId, List<BudgetDTO> budgetDTOs) {
+    public List<BudgetDTO> updateBudgets(Long accountBookId, List<BudgetDTO> budgetDTOs) {
         AccountBook accountBook = accountBookRepository.findById(accountBookId)
                 .orElseThrow(() -> new RuntimeException("AccountBook not found"));
 

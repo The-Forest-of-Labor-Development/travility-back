@@ -80,8 +80,9 @@ public class AccountBookService {
             String newImgName = UUID.randomUUID().toString() + extension; //새 이미지 이름
             img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
 
+            System.out.println(originalName);
             //기존 이미지 파일 삭제
-            if(!originalName.equals("default_image.png") && accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
+            if(accountBook.getImgName().equals("default_image.png") == false && accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
                 File oldImg = new File(path,accountBook.getImgName());
                 if (oldImg.exists()){
                     oldImg.delete();

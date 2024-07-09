@@ -4,9 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import travility_back.travility.entity.Expense;
-import travility_back.travility.entity.enums.Role;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +29,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.accountBook.id=:accountbookId and e.expenseDate BETWEEN :startDate AND :endDate")
     Double findTotalAmountByDateRange(@Param("accountbookId") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("select sum(e.amount) from Expense e where e.accountBook.id=:accountBookId and e.isShared = true")
-    Double findTotalSharedExpensesByAccountBookId(@Param("accountBookId")Long id);
+//    @Query("select sum(e.amount) from Expense e where e.accountBook.id=:accountBookId and e.isShared = true")
+//    Double findTotalSharedExpensesByAccountBookId(@Param("accountBookId")Long id);
 
+    @Query("select e from Expense e where e.accountBook.id =:accountBookId and e.isShared = true")
+    List<Expense> findSharedExpensesByAccountBookId(@Param("accountBookId") Long accountBookId);
 
 
 

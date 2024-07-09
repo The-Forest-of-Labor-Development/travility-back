@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     void deleteByAccountBookId(Long accountBookId);
+    List<Budget> findByAccountBookId(Long accountBookId);
 }
