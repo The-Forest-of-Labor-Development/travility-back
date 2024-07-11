@@ -34,7 +34,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
 
 
-
 //    // 카테고리별 지출 금액
 //    @Query("select e.category, SUM(e.amount) from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.category")
 //    List<Object[]> findTotalAmountByCategory(@Param("memberId") Long memberId);

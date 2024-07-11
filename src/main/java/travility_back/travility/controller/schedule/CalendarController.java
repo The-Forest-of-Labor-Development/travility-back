@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import travility_back.travility.dto.CustomUserDetails;
+import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.service.schedule.CalendarService;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/accountBook")
@@ -24,7 +26,7 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     @GetMapping("/schedule")
-    public ResponseEntity<List<Map<String, Object>>> getAccountBooksByMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<Map <String, Object>>> getAccountBooksByMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String username = userDetails.getUsername();
         List<Map<String, Object>> events = calendarService.getAccountBooksEventsByUsername(username);
         return ResponseEntity.ok(events);
@@ -37,9 +39,14 @@ public class CalendarController {
         return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("/expenses/{accountBookId}")
-    public ResponseEntity<List<Expense>> getAllExpensesByAccountBookId(@PathVariable("accountBookId") Long accountBookId) {
-        List<Expense> expenses = calendarService.getAllExpensesByAccountBookId(accountBookId);
-        return ResponseEntity.ok(expenses);
+    //accountbookId의 모든 지출 dto로 반환
+    @GetMapping("/expenses/{accountbookId}")
+    public ResponseEntity<List<ExpenseDTO>> getAllExpensesByAccountbookId(@PathVariable("accountbookId") Long accountbookId) {
+        List<Expense> expenses = calendarService.getAllExpensesByAccountbookId(accountbookId);
+        List<ExpenseDTO> expenseDTOs = expenses.stream()
+                .map(ExpenseDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(expenseDTOs);
     }
+
 }

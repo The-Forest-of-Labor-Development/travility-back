@@ -1,8 +1,11 @@
 package travility_back.travility.service.schedule;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.Member;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
+    private static final Logger logger = LoggerFactory.getLogger(CalendarService.class);
 
     private final AccountBookRepository accountBookRepository;
     private final MemberRepository memberRepository;
@@ -43,6 +47,7 @@ public class CalendarService {
         return accountBookRepository.findByMemberId(memberId);
     }
 
+
     // username으로 일정(event) 가져오기
     public List<Map<String, Object>> getAccountBooksEventsByUsername(String username) {
         Long memberId = getMemberIdByUsername(username);
@@ -61,6 +66,8 @@ public class CalendarService {
                 event.put("title", book.getTitle()); // 제목 설정
                 event.put("start", book.getStartDate().toString()); // 일정 시작 날짜 설정
                 event.put("end", book.getEndDate().toString()); // 일정 종료 날짜 설정
+                event.put("countryName", book.getCountryName()); //나라 이름
+                event.put("imgName", book.getImgName()); //대표 이미지
                 uniqueEvents.put(key, event); // Map에 넣어버리기
             }
         }
@@ -73,6 +80,7 @@ public class CalendarService {
     public Map<LocalDate, Double> getExpenseByDay(Long id) {
 
         //id로 가계부 찾기
+        logger.debug("Getting expenses by day for accountBookId: {}", id);
         AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("accountbook not found"));
 
         //가계부에서 여행 시작 날짜와 종료 날짜 추출
@@ -88,14 +96,17 @@ public class CalendarService {
             LocalDateTime end = startDate.plusDays(1).atStartOfDay(); //내일 날짜 시작 00:00:00
             Double sum = expenseRepository.findTotalAmountByDateRange(id, start, end); //해당 날짜의 총합 가져오기
             map.put(startDate, sum != null ? sum : 0.0); //추가 //2024-07-04 320000  //2024-07-05 400000
+            logger.debug("Date: {}, Sum: {}", startDate, sum);
             startDate = startDate.plusDays(1);
         }
         return map;
     }
 
+
     // accountbookId 로 모든 expense 가져오기
-    public List<Expense> getAllExpensesByAccountBookId(Long accountBookId) {
-        return expenseRepository.findByAccountBookId(accountBookId);
+    public List<Expense> getAllExpensesByAccountbookId(Long accountbookId) {
+        return expenseRepository.findByAccountBookId(accountbookId);
     }
+
 
 }
