@@ -167,6 +167,16 @@ public class StatisticService {
         return budgetRepository.getTotalBudgetByAccountBookId(accountBookId);
     }
 
+    public Double getTotalExpenseByAccountBookId(Long accountBookId) {
+        return expenseRepository.getTotalExpenseByAccountBookId(accountBookId);
+    }
+
+    public Double getRemainingBudget(Long accountBookId) {
+        Double totalBudget = getTotalBudgetByAccountBookId(accountBookId);
+        Double totalExpense = getTotalExpenseByAccountBookId(accountBookId);
+        return totalBudget - totalExpense;
+    }
+
 
 
 //    public List<CategoryDateAmountDTO> getCategoryAmountByDate(Long accountBookId, Long memberId, LocalDate startDate, LocalDate endDate) {
