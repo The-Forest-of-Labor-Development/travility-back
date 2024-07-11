@@ -5,6 +5,7 @@ import lombok.Setter;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -12,7 +13,7 @@ import java.util.Date;
 public class ExpenseDTO {
     private Long id;
     private String title;
-    private Date expenseDate;
+    private LocalDate expenseDate;
     private double amount;
     private boolean isShared;
     private String imgName;
