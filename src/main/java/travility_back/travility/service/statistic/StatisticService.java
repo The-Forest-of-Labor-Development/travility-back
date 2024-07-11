@@ -179,38 +179,6 @@ public class StatisticService {
 
 
 
-//    public List<CategoryDateAmountDTO> getCategoryAmountByDate(Long accountBookId, Long memberId, LocalDate startDate, LocalDate endDate) {
-//        List<Object[]> results = expenseRepository.findCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
-//        return results.stream()
-//                .map(result -> new CategoryDateAmountDTO(
-//                        (Category) result[0],
-//                        (LocalDate) result[1],
-//                        (Double) result[2]
-//                ))
-//                .collect(Collectors.toList());
-//    }
-
-
-
-//    public List<CategoryDateAmountDTO> getCategoryAmountByDate(Long accountBookId, Long memberId, LocalDate startDate, LocalDate endDate) {
-//        List<Object[]> results = expenseRepository.findCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
-//
-//        List<LocalDate> allDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
-//        List<CategoryDateAmountDTO> dtoList = new ArrayList<>();
-//
-//        for (LocalDate date : allDates) {
-//            for (Category category : Category.values()) {
-//                double amount = results.stream()
-//                        .filter(result -> result[0].equals(date) && result[1].equals(category))
-//                        .mapToDouble(result -> (Double) result[2])
-//                        .sum();
-//                dtoList.add(new CategoryDateAmountDTO(date, category, amount));
-//            }
-//        }
-//
-//        return dtoList;
-//    }
-
 
 
 
