@@ -5,16 +5,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import travility_back.travility.dto.statistics.MyReportExpenseStatisticsDTO;
-import travility_back.travility.dto.statistics.PaymentMethodAmountDTO;
+import travility_back.travility.dto.statistics.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
+import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class StatisticService {
 
     private final ExpenseRepository expenseRepository;
     private final MemberRepository memberRepository;
+    private final BudgetRepository budgetRepository;
 
     // 사용자 통계 데이터 가져오기
     public MyReportExpenseStatisticsDTO getStatistics(Long memberId) {
@@ -91,7 +96,7 @@ public class StatisticService {
      * @param username 사용자 이름
      * @return 사용자 ID
      */
-    private Long getMemberIdByUsername(String username) {
+    public Long getMemberIdByUsername(String username) {
         Optional<Member> member = memberRepository.findByUsername(username); // 사용자 이름으로 사용자 검색
         if (member.isPresent()) {
             System.out.println("member.get().getId() = " + member.get().getId()); // 삭제
@@ -114,5 +119,89 @@ public class StatisticService {
             throw new UsernameNotFoundException(username); // 사용자 없으면
         }
     }
+////////////////////////////////////////////
+    /**
+     * 날짜별로 카테고리 지출 금액 가져오는 메서드
+     */
+    public List<DateCategoryAmountDTO> getStatisticsByDate(Long accountBookId, Long memberId) {
+        List<Object[]> results = expenseRepository.findTotalAmountByDateAndCategory(accountBookId, memberId);
+        return results.stream()
+                .map(result -> new DateCategoryAmountDTO(
+                        ((LocalDate) result[0]).toString(),
+                        (Category) result[1],
+                        (Double) result[2]
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 날짜별로 지출 방법별 금액 가져오기
+     */
+    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDate date) {
+        List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, date);
+        return results.stream()
+                .map(result -> new PaymentMethodAmountDTO(
+                        (PaymentMethod) result[0],
+                        (Double) result[1]
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 한 일정에 대한 카테고리별 총 지출 가져오기
+     */
+    public List<DateCategoryAmountDTO> getTotalAmountByCategoryForAll(Long accountBookId, Long memberId) {
+        List<Object[]> results = expenseRepository.findTotalAmountByCategoryForAll(accountBookId, memberId);
+        return results.stream()
+                .map(result -> new DateCategoryAmountDTO(
+                        "TOTAL",
+                        (Category) result[0],
+                        (Double) result[1]
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    // 예산 - 지출
+    public Double getTotalBudgetByAccountBookId(Long accountBookId) {
+        return budgetRepository.getTotalBudgetByAccountBookId(accountBookId);
+    }
+
+
+
+//    public List<CategoryDateAmountDTO> getCategoryAmountByDate(Long accountBookId, Long memberId, LocalDate startDate, LocalDate endDate) {
+//        List<Object[]> results = expenseRepository.findCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
+//        return results.stream()
+//                .map(result -> new CategoryDateAmountDTO(
+//                        (Category) result[0],
+//                        (LocalDate) result[1],
+//                        (Double) result[2]
+//                ))
+//                .collect(Collectors.toList());
+//    }
+
+
+
+//    public List<CategoryDateAmountDTO> getCategoryAmountByDate(Long accountBookId, Long memberId, LocalDate startDate, LocalDate endDate) {
+//        List<Object[]> results = expenseRepository.findCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
+//
+//        List<LocalDate> allDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+//        List<CategoryDateAmountDTO> dtoList = new ArrayList<>();
+//
+//        for (LocalDate date : allDates) {
+//            for (Category category : Category.values()) {
+//                double amount = results.stream()
+//                        .filter(result -> result[0].equals(date) && result[1].equals(category))
+//                        .mapToDouble(result -> (Double) result[2])
+//                        .sum();
+//                dtoList.add(new CategoryDateAmountDTO(date, category, amount));
+//            }
+//        }
+//
+//        return dtoList;
+//    }
+
+
+
 
 }
