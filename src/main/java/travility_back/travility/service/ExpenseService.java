@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import travility_back.travility.dto.AccountBookDTO;
 import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Expense;
@@ -21,7 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AccountExpenseService {
+public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final AccountBookRepository accountBookRepository;
@@ -57,6 +56,7 @@ public class AccountExpenseService {
             img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
 
             expense.setImgName(newImgName);
+
         }else{
             expense.setImgName("default_image.png");
         }
@@ -95,7 +95,7 @@ public class AccountExpenseService {
             img.transferTo(new File(path,newImgName)); //지정된 경로를 가진 새 파일 객체 생성하여 업로드
 
             //기존 이미지 파일 삭제
-            if(!originalName.equals("default_image.png") && expense.getImgName() != null && !expense.getImgName().isEmpty()){
+            if(expense.getImgName().equals("default_image.png") == false && expense.getImgName() != null && !expense.getImgName().isEmpty()){
                 File oldImg = new File(path,expense.getImgName());
                 if (oldImg.exists()){
                     oldImg.delete();
