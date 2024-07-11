@@ -48,6 +48,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
 
 
+    // 예산 - 지출
+    @Query("SELECT SUM(CASE WHEN e.isShared = true THEN FLOOR(e.amount / ab.numberOfPeople) ELSE e.amount END) " +
+            "FROM Expense e " +
+            "JOIN e.accountBook ab " +
+            "WHERE ab.id = :accountBookId")
+    Double getTotalExpenseByAccountBookId(@Param("accountBookId") Long accountBookId);
+
+
+
 
 //    // 전체통계 : 카테고리별 전체 지출 작동 안할수도
 //    @Query("select e.category, e.expenseDate, SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople)) else floor(e.amount) end) " +
