@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import travility_back.travility.dto.statistics.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.service.statistic.StatisticService;
@@ -66,6 +63,25 @@ public class StatisticController {
         Long memberId = statisticService.getMemberIdByUsername(username);
         List<DateCategoryAmountDTO> statistics = statisticService.getTotalAmountByCategoryForAll(accountBookId, memberId);
         return ResponseEntity.ok(statistics);
+    }
+
+    //==예산 - 지출==//
+    @GetMapping("/statistics/totalbudget")
+    public ResponseEntity<Double> getTotalBudgetByAccountBookId(@RequestParam Long accountBookId) {
+        Double totalBudget = statisticService.getTotalBudgetByAccountBookId(accountBookId);
+        return ResponseEntity.ok(totalBudget);
+    }
+
+    @GetMapping("/statistics/totalexpense")
+    public ResponseEntity<Double> getTotalExpenseByAccountBookId(@RequestParam Long accountBookId) {
+        Double totalExpense = statisticService.getTotalExpenseByAccountBookId(accountBookId);
+        return ResponseEntity.ok(totalExpense);
+    }
+
+    @GetMapping("/statistics/remaining-budget")
+    public ResponseEntity<Double> getRemainingBudget(@RequestParam Long accountBookId) {
+        Double remainingBudget = statisticService.getRemainingBudget(accountBookId);
+        return ResponseEntity.ok(remainingBudget);
     }
 
 //    @GetMapping("/statistics/categoryDateAmount")
