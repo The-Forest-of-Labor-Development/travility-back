@@ -1,15 +1,20 @@
 package travility_back.travility.controller.statistic;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import travility_back.travility.dto.statistics.MyReportExpenseStatisticsDTO;
+import travility_back.travility.dto.statistics.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.service.statistic.StatisticService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/accountbook")
@@ -18,6 +23,9 @@ public class StatisticController {
 
     private final StatisticService statisticService;
 
+    /**
+     * 마이 리포트
+     */
     @GetMapping("/detail")
     public ResponseEntity<MyReportExpenseStatisticsDTO> getStatistics() {
         MyReportExpenseStatisticsDTO statisticsDto = statisticService.getStatistics();
@@ -31,4 +39,41 @@ public class StatisticController {
         Member member = statisticService.getMemberByUsername(username);
         return ResponseEntity.ok(member);
     }
+
+    /**
+     * 지출 통계
+     */
+
+    @GetMapping("/statistics/category")
+    public ResponseEntity<List<DateCategoryAmountDTO>> getStatisticsByDate(@RequestParam Long accountBookId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long memberId = statisticService.getMemberIdByUsername(username);
+        List<DateCategoryAmountDTO> statistics = statisticService.getStatisticsByDate(accountBookId, memberId);
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/statistics/paymentMethod")
+    public ResponseEntity<List<PaymentMethodAmountDTO>> getPaymentMethodStatistics(@RequestParam Long accountBookId, @RequestParam LocalDate date) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long memberId = statisticService.getMemberIdByUsername(username);
+        List<PaymentMethodAmountDTO> statistics = statisticService.getPaymentMethodStatistics(accountBookId, memberId, date);
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/statistics/totalcategory")
+    public ResponseEntity<List<DateCategoryAmountDTO>> getTotalAmountByCategoryForAll(@RequestParam Long accountBookId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long memberId = statisticService.getMemberIdByUsername(username);
+        List<DateCategoryAmountDTO> statistics = statisticService.getTotalAmountByCategoryForAll(accountBookId, memberId);
+        return ResponseEntity.ok(statistics);
+    }
+
+//    @GetMapping("/statistics/categoryDateAmount")
+//    public ResponseEntity<List<CategoryDateAmountDTO>> getCategoryAmountByDate(@RequestParam Long accountBookId, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Long memberId = statisticService.getMemberIdByUsername(username);
+//        List<CategoryDateAmountDTO> statistics = statisticService.getCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
+//        return ResponseEntity.ok(statistics);
+
+//    }
 }
