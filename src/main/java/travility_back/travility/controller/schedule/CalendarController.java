@@ -49,4 +49,10 @@ public class CalendarController {
         return ResponseEntity.ok(expenseDTOs);
     }
 
+    @GetMapping("/{id}/totalExpenses")
+    public ResponseEntity<Map<String, Object>> getTotalExpenses(@PathVariable("id") Long id) {
+        Map<String, Object> result = calendarService.calculateTotalExpenses(id);
+        return ResponseEntity.ok(result);
+    }
+
 }

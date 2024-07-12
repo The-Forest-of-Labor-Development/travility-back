@@ -7,12 +7,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
+import travility_back.travility.entity.Budget;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.Member;
 import travility_back.travility.repository.AccountBookRepository;
+import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -26,6 +30,7 @@ public class CalendarService {
     private final AccountBookRepository accountBookRepository;
     private final MemberRepository memberRepository;
     private final ExpenseRepository expenseRepository;
+    private final BudgetRepository budgetRepository;
 
     /**
      * <p>{@code getMemberByUsername()} username으로 memberId 조회</p>
@@ -108,5 +113,63 @@ public class CalendarService {
         return expenseRepository.findByAccountBookId(accountbookId);
     }
 
+    //지출액 총합 계산(가중 평균)
+    public Map<String, Object> calculateTotalExpenses(Long id) {
+        AccountBook accountBook = accountBookRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
+        List<Budget> budgets = budgetRepository.findByAccountBookId(id);
 
+        Map<String, Double> weightedAvgExchangeRates = calculateWeightedAverageExchangeRateByCurrency(budgets);
+        List<Expense> expenses = expenseRepository.findByAccountBookId(id);
+
+        BigDecimal totalAmountKRW = BigDecimal.ZERO;
+        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
+
+        for (Expense expense : expenses) {
+            String currency = expense.getCurUnit();
+            BigDecimal amount = BigDecimal.valueOf(expense.getAmount());
+            BigDecimal exchangeRate = BigDecimal.valueOf(weightedAvgExchangeRates.getOrDefault(currency, 1.0));
+            BigDecimal amountInKRW = amount.multiply(exchangeRate).setScale(2, RoundingMode.HALF_UP);
+            totalAmountKRW = totalAmountKRW.add(amountInKRW);
+
+            expenseDTOs.add(new ExpenseDTO(expense));
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalAmount", totalAmountKRW.doubleValue());
+        result.put("expenses", expenseDTOs);
+        result.put("exchangeRates", weightedAvgExchangeRates);
+
+        System.out.println("Weighted Average Exchange Rates: " + weightedAvgExchangeRates);
+        System.out.println("Total Amount in KRW: " + totalAmountKRW);
+        System.out.println("Expenses: " + expenseDTOs);
+
+        return result;
+    }
+
+
+    // 가중 평균 환율 계산
+    private Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
+        Map<String, BigDecimal> totalAmountByCurrency = new HashMap<>();
+        Map<String, BigDecimal> totalWeightedExchangeRateByCurrency = new HashMap<>();
+
+        for (Budget budget : budgets) {
+            String currency = budget.getCurUnit();
+            BigDecimal amount = BigDecimal.valueOf(budget.getAmount());
+            BigDecimal exchangeRate = BigDecimal.valueOf(budget.getExchangeRate());
+
+            totalAmountByCurrency.put(currency, totalAmountByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount));
+            totalWeightedExchangeRateByCurrency.put(currency, totalWeightedExchangeRateByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount.multiply(exchangeRate)));
+        }
+
+        Map<String, Double> weightedAvgExchangeRates = new HashMap<>();
+        for (String currency : totalAmountByCurrency.keySet()) {
+            BigDecimal totalAmount = totalAmountByCurrency.get(currency);
+            BigDecimal totalWeightedExchangeRate = totalWeightedExchangeRateByCurrency.get(currency);
+            BigDecimal weightedAvgExchangeRate = totalWeightedExchangeRate.divide(totalAmount, 2, RoundingMode.HALF_UP); // 소수점 둘째자리까지 저장
+            weightedAvgExchangeRates.put(currency, weightedAvgExchangeRate.doubleValue());
+        }
+
+        return weightedAvgExchangeRates;
+    }
 }
