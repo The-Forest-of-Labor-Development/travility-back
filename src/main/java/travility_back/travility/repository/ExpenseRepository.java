@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import travility_back.travility.dto.statistics.CategoryDateAmountDTO;
 import travility_back.travility.entity.Expense;
+import travility_back.travility.entity.enums.Category;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -54,6 +55,20 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "JOIN e.accountBook ab " +
             "WHERE ab.id = :accountBookId")
     Double getTotalExpenseByAccountBookId(@Param("accountBookId") Long accountBookId);
+
+    /**
+     * 라인차트 사실 라디오 버튼용임
+     */
+
+    // 전체 지출 가져오기
+    @Query("select e.expenseDate, SUM(case when e.isShared = true then e.amount / ab.numberOfPeople else e.amount end) " +
+            "from Expense e JOIN e.accountBook ab WHERE ab.id = :accountBookId AND ab.member.id = :memberId GROUP BY e.expenseDate")
+    List<Object[]> findTotalAmountByDates(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId);
+
+    // 특정 카테고리 지출 가져오기
+    @Query("select e.expenseDate, e.category, SUM(case when e.isShared = true then e.amount / ab.numberOfPeople else e.amount end) " +
+            "from Expense e JOIN e.accountBook ab WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.category in :categories GROUP BY e.expenseDate, e.category")
+    List<Object[]> findTotalAmountByDatesAndCategories(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("categories") List<Category> categories);
 
 
 
