@@ -23,15 +23,10 @@ public class SettlementController {
         return  settlementService.getAccountBook(id);
     }
 
-    //공동 경비 합계 & 통화 코드별 가중 평균 환율
+    //통화 코드별 공동 경비 합계 & 가중 평균 환율
     @GetMapping("/{id}/totals")
     public Map<String, Object> getTotalSharedExpensesAndExchangeRates(@PathVariable("id") Long id) {
         return settlementService.getTotalSharedExpensesAndExchangeRates(id);
     }
 
-    //1인당 정산 금액
-    @GetMapping("/{id}/per-person")
-    public Double getPerPersonAmount(@PathVariable("id") Long id) {
-        return settlementService.getPerPersonAmount(id);
-    }
 }

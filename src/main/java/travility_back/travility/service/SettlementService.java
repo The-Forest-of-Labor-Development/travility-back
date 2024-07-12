@@ -32,7 +32,7 @@ public class SettlementService {
     }
 
     //예산의 통화 코드별 가중 평균 환율
-    public Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
+    private Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
         Map<String, Double> currencyToAvgExchangeRate = new HashMap<>(); //통화 코드별 가중 평균 환율
         Map<String, Double> currencyToTotalAmount = new HashMap<>(); //통화 코드별 총 예산 금액
 
@@ -53,8 +53,8 @@ public class SettlementService {
         return currencyToAvgExchangeRate;
     }
 
-    //공동 경비 합계
-    public Double calculateTotalSharedExpenses(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
+    //예산의 통화 코드별 공동 경비 합계
+    private Double calculateTotalSharedExpensesByCurrency(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
         double totalSharedExpenses = 0.0;
         for (Expense expense : expenses) {
             String currency = expense.getCurUnit(); //통화 코드
@@ -66,37 +66,27 @@ public class SettlementService {
         return totalSharedExpenses;
     }
 
-    //공동 경비 합계
+    //통화 코드별 공동 경비 합계 & 가중 평균 환율
     @Transactional(readOnly = true)
     public Map<String, Object> getTotalSharedExpensesAndExchangeRates(Long id) {
-        //가계부 아이디 & 공유 경비인 지출 목록 찾기
-        List<Expense> expenses = expenseRepository.findSharedExpensesByAccountBookId(id);
-
         //가계부 아이디를 가진 예산 목록 찾기
         List<Budget> budgets = budgetRepository.findByAccountBookId(id);
 
-        // 예산의 통화 코드별 가중 평균 환율 계산
+        //예산의 통화 코드별 가중 평균 환율 계산
         Map<String, Double> currencyToAvgExchangeRate = calculateWeightedAverageExchangeRateByCurrency(budgets);
 
-        //공동 경비 합계
-        Double totalSharedExpenses = calculateTotalSharedExpenses(expenses, currencyToAvgExchangeRate);
+        //예산의 통화 코드별 공동 경비 합계
+        Map<String, Double> totalSharedExpensesByCurrency = new HashMap<>();
+        for(String currency : currencyToAvgExchangeRate.keySet()) {
+            List<Expense> expenses = expenseRepository.findSharedExpensesByAccountBookIdAndCurUnit(id, currency);
+            Double sum = calculateTotalSharedExpensesByCurrency(expenses, currencyToAvgExchangeRate);
+            totalSharedExpensesByCurrency.put(currency,sum);
+        }
 
         Map<String, Object> result = new HashMap<>();
-        result.put("totalSharedExpenses", totalSharedExpenses); //공동 경비 합계
+        result.put("totalSharedExpensesByCurrency", totalSharedExpensesByCurrency); //공동 경비 합계
         result.put("currencyToAvgExchangeRate", currencyToAvgExchangeRate); //통화 코드별 가중 평균 환율
 
         return result;
-    }
-
-    //1인당 정산 금액
-    @Transactional(readOnly = true)
-    public Double getPerPersonAmount(Long id) {
-        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
-        int numberOfPeple = accountBook.getNumberOfPeople(); //인원수
-        Double totalSharedExpense = (Double) getTotalSharedExpensesAndExchangeRates(id).get("totalSharedExpenses"); //공동 경비 합계
-        if(totalSharedExpense == null){
-            totalSharedExpense = 0.0;
-        }
-        return totalSharedExpense / numberOfPeple;
     }
 }

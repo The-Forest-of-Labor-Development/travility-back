@@ -9,8 +9,6 @@ import travility_back.travility.entity.Member;
 
 import java.util.List;
 
-import java.util.List;
-
 public interface AccountBookRepository extends JpaRepository<AccountBook, Long> {
 
     @Query("select a from AccountBook a where a.member.id = :memberId")
@@ -18,5 +16,9 @@ public interface AccountBookRepository extends JpaRepository<AccountBook, Long> 
 
     @Query("select ab.countryName from AccountBook ab group by ab.countryName order by count(ab) desc")
     List<String> findTop5TravelDestination(Pageable pageable);
+
     List<AccountBook> findByMember(Member member);
+
+    @Query("select ab.title, ab.countryName, ab.countryFlag, ab.startDate, ab.endDate, ab.numberOfPeople from AccountBook ab where ab.id = :accountBookId")
+    Object[] findFieldsByAccountBookId(@Param("accountBookId")Long accountBookId);
 }
