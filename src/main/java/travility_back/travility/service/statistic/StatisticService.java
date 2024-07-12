@@ -177,6 +177,28 @@ public class StatisticService {
         return totalBudget - totalExpense;
     }
 
+    // 라디오 버튼(라인차트)
+    public List<DateCategoryAmountDTO> getStatisticsByDates(Long accountBookId, Long memberId) {
+        List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId);
+        return results.stream()
+                .map(result -> new DateCategoryAmountDTO(
+                        ((LocalDate) result[0]).toString(),
+                        null,
+                        (Double) result[1]
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<DateCategoryAmountDTO> getStatisticsByCategoryAndDates(Long accountBookId, Long memberId, List<Category> categories) {
+        List<Object[]> results = expenseRepository.findTotalAmountByDatesAndCategories(accountBookId, memberId, categories);
+        return results.stream()
+                .map(result -> new DateCategoryAmountDTO(
+                        ((LocalDate) result[0]).toString(),
+                        (Category) result[1],
+                        (Double) result[2]
+                ))
+                .collect(Collectors.toList());
+    }
 
 
 
