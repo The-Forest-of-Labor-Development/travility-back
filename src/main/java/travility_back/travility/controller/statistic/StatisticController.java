@@ -8,9 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import travility_back.travility.dto.statistics.*;
 import travility_back.travility.entity.Member;
+import travility_back.travility.entity.enums.Category;
 import travility_back.travility.service.statistic.StatisticService;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -83,6 +85,30 @@ public class StatisticController {
         Double remainingBudget = statisticService.getRemainingBudget(accountBookId);
         return ResponseEntity.ok(remainingBudget);
     }
+
+    /**
+     * 라인차트
+     */
+    @GetMapping("/statistics/category-by-dates")
+    public ResponseEntity<List<DateCategoryAmountDTO>> getStatisticsByCategoryAndDates(@RequestParam Long accountBookId, @RequestParam String category) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long memberId = statisticService.getMemberIdByUsername(username);
+        List<DateCategoryAmountDTO> statistics;
+
+        if ("ALL".equals(category)) {
+            statistics = statisticService.getStatisticsByDates(accountBookId, memberId);
+        } else {
+            List<Category> categories = Collections.singletonList(Category.valueOf(category));
+            statistics = statisticService.getStatisticsByCategoryAndDates(accountBookId, memberId, categories);
+        }
+
+        return ResponseEntity.ok(statistics);
+    }
+
+
+
+
+
 
 //    @GetMapping("/statistics/categoryDateAmount")
 //    public ResponseEntity<List<CategoryDateAmountDTO>> getCategoryAmountByDate(@RequestParam Long accountBookId, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
