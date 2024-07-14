@@ -3,6 +3,7 @@ package travility_back.travility.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,20 +14,29 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import travility_back.travility.dto.CustomUserDetails;
 import travility_back.travility.dto.LoginDTO;
+import travility_back.travility.entity.Member;
+import travility_back.travility.entity.RefreshToken;
+import travility_back.travility.repository.MemberRepository;
+import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, MemberRepository memberRepository, RefreshTokenRepository refreshTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.memberRepository = memberRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl("/api/login");
     }
 
@@ -53,7 +63,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //username 추출
         String username = customUserDetails.getUsername();
-        String name = customUserDetails.getName();
+        String name = customUserDetails.getName(); //닉네임
 
         //role 추출
         Collection<? extends GrantedAuthority> collection = authResult.getAuthorities(); //권한 목록 반환
@@ -61,21 +71,44 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority grantedAuthority = iterator.next(); //첫 번째 권한
         String role = grantedAuthority.getAuthority(); //권한 이름 반환
 
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", username, name, role,60 * 60 * 1000L); //1시간. 밀리초 단위
+        String refresh = jwtUtil.createJwt("refresh", username, name, role,604800000L); //일주일. 밀리초 단위
 
-        String token = jwtUtil.createJwt(username, name, role,60 * 60 * 1000L); //1시간. 밀리초 단위
+        //Refresh 토큰 저장
+        addRefreshToken(username, refresh, 604800000L);
 
+        //응답
         response.setContentType("application/json"); //응답 타입 JSON
         response.setCharacterEncoding("UTF-8");
-        response.addHeader("Authorization", "Bearer " + token); //응답 헤더에 JWT 추가
+        response.addHeader("Authorization", "Bearer " + access); //응답 헤더에 accessToken 추가
+        response.addCookie(createCookie("refresh", refresh)); //응답 쿠키에 refreshToken 추가
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     //로그인 인증 실패 후 로직
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        response.setStatus(401); //401 Unauthorized
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         response.setContentType("application/json"); //응답 타입 JSON
         response.setCharacterEncoding("UTF-8");
 
+    }
+
+    //Refresh 토큰 DB 저장
+    private void addRefreshToken(String username, String refresh, Long expiredMs) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()-> new NoSuchElementException("Member not found"));
+        RefreshToken refreshToken = new RefreshToken(refresh,expiredMs.toString(),member);
+        refreshTokenRepository.save(refreshToken);
+    }
+
+    private Cookie createCookie(String key, String value){
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(604800); //일주일. 초단위
+        cookie.setPath("/"); //쿠키가 적용될 범위
+        cookie.setHttpOnly(true); //자바스크립트 접근 x
+
+        return cookie;
     }
 }

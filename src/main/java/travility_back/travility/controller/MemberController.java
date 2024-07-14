@@ -1,18 +1,19 @@
 package travility_back.travility.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import travility_back.travility.dto.CustomUserDetails;
 import travility_back.travility.dto.MemberDTO;
-import travility_back.travility.entity.Member;
 import travility_back.travility.security.jwt.JWTUtil;
 import travility_back.travility.service.MemberService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -20,6 +21,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JWTUtil jwtUtil;
 
     //아이디 중복 확인
     @GetMapping("/api/auth/duplicate-username")
@@ -33,11 +35,33 @@ public class MemberController {
 
     //쿠키 JWT -> 헤더 JWT
     @GetMapping("/api/auth/social-jwt")
-    public void getTokenfromCookie(@CookieValue("Authorization") String token, HttpServletResponse response) {
-        if(token == null || token.isEmpty()) {
-            response.setStatus(401); //권한 없음
+    public void getTokenfromCookie(@CookieValue("refresh") String refreshToken, HttpServletResponse response) {
+        if(refreshToken == null || refreshToken.isEmpty() || jwtUtil.isExpired(refreshToken)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //권한 없음
+            return;
         }
-        response.addHeader("Authorization", "Bearer " + token);
+
+        String username = jwtUtil.getUsername(refreshToken);
+        String name = jwtUtil.getName(refreshToken);
+        String role = jwtUtil.getRole(refreshToken);
+
+        String accessToken = jwtUtil.createJwt("access",username,name,role,60 * 60 * 1000L);
+
+        response.addHeader("Authorization", "Bearer " + accessToken);
+    }
+
+    //Access Token 재발급
+    @PostMapping("/api/auth/reissue")
+    public ResponseEntity<?> reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) { //쿠키에 있는 리프레시 토큰 추출
+            if (cookie.getName().equals("refresh")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        return memberService.reissueAccessToken(refreshToken, response);
     }
 
     //토큰 만료 여부
@@ -50,27 +74,6 @@ public class MemberController {
     @PostMapping("/api/signup")
     public void signup(@RequestBody MemberDTO memberDTO) {
         memberService.signup(memberDTO);
-    }
-
-    //로그아웃
-    @PostMapping("/api/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookie = request.getCookies();
-        System.out.println(cookie);
-        if(cookie != null) { //쿠키 있음 -> 소셜 로그인 사용자
-            for(Cookie c : cookie) {
-                System.out.println("Cookie Name: " + c.getName());
-                if (c.getName().equals("Authorization") || c.getName().equals("JSESSIONID")) {
-                    c.setValue("");
-                    c.setPath("/"); //모든 경로에서 삭제
-                    c.setMaxAge(0); //유효 기간 0
-                    response.addCookie(c);
-                }
-            }
-        }
-
-        request.getSession().invalidate(); //세션 무효화
-        System.out.println("로그아웃 성공");
     }
 
     //회원 정보
@@ -88,16 +91,17 @@ public class MemberController {
 
         if(socialType  == null) {//일반 로그인 사용자
             memberService.deleteStandardAccount(userDetails);
-            logout(request, response);
+            memberService.logout(request, response);
         } else if (socialType.equals("naver")) {//네이버 로그인 사용자
             memberService.deleteNaverAccount(userDetails);
-            logout(request, response);
+            memberService.logout(request, response);
         } else if (socialType.equals("google")) {//구글 로그인 사용자
             memberService.deleteGoogleAccount(userDetails);
-            logout(request, response);
+            memberService.logout(request, response);
         } else if (socialType.equals("kakao")) { // 카카오
             memberService.deleteKakaoAccount(userDetails);
-            logout(request, response);
+            memberService.logout(request, response);
         }
     }
+
 }

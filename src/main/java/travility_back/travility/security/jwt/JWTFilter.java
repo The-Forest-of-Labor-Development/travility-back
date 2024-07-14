@@ -15,6 +15,7 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
@@ -24,25 +25,34 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
+        String accessToken = request.getHeader("Authorization");
 
-        if (authorization == null || !authorization.startsWith("Bearer ")){
+        if (accessToken == null || !accessToken.startsWith("Bearer ")){
             System.out.println("token null"); //로그인 상태 아님
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authorization.substring(7); //"Bearer " 이후부터 토큰
+        String token = accessToken.substring(7); //"Bearer " 이후부터 토큰
 
-        if (jwtUtil.isExpired(token)){ //true면 token 만료
-            //throw new IllegalArgumentException("token expired");
-            System.out.println("token expired");
-            response.setStatus(401);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            String json = "{\"message\" : \"Token expired\"}";
-            response.getWriter().write(json);
-            response.getWriter().flush();
+        //accessToken이 만료되었을 경우
+        try{
+            jwtUtil.isExpired(token);
+        }catch (ExpiredJwtException e){
+            System.out.println("access token expired");
+
+            //response
+            response.getWriter().write("access token expired");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String category = jwtUtil.getCategory(token);
+
+        if(!category.equals("access")){ //페이로드에 명시된 카테고리가 access가 아닌 경우
+            //response
+            response.getWriter().write("invalid access token");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 

@@ -14,12 +14,12 @@ import java.util.Date;
 public class JWTUtil { //JWT 토큰 생성, 검증 메소드 클래스
     private SecretKey secretKey;
 
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret){ //비밀키 생성
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret) { //비밀키 생성
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
     //JWT에서 username 클레임 추출
-    public String getUsername(String token){
+    public String getUsername(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -28,8 +28,17 @@ public class JWTUtil { //JWT 토큰 생성, 검증 메소드 클래스
                 .get("username", String.class); //username 추출하여 문자열로 반환
     }
 
+    public String getName(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("name", String.class);
+    }
+
     //JWT에서 password 클레임 추출
-    public String getRole(String token){
+    public String getRole(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -38,27 +47,34 @@ public class JWTUtil { //JWT 토큰 생성, 검증 메소드 클래스
                 .get("role", String.class); //password 추출하여 문자열로 반환
     }
 
-    //JWT 만료 검증
-    public Boolean isExpired(String token){
-        try {
-            return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .getExpiration() //만료 시간 추출
-                    .before(new Date()); //현재 시간보다 이전인지 확인
-        }catch(ExpiredJwtException e) {
-            return true;
-        }
+    //JWT에서 category 클레임 추출
+    public String getCategory(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("category", String.class); //category 추출하여 문자열로 반환
     }
 
-    public String createJwt(String username, String name, String role, Long expiredMs){
+    //JWT 만료 검증
+    public Boolean isExpired(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration() //만료 시간 추출
+                .before(new Date()); //현재 시간보다 이전인지 확인
+    }
+
+    //JWT 생성
+    public String createJwt(String category, String username, String name, String role, Long expiredMs) {
         Date date = new Date();
         Date tokenExpiryDate = new Date(date.getTime() + expiredMs);
 
-        System.out.println(tokenExpiryDate);
         return Jwts.builder() //JWT 생성하기 위한 빌더 객체 반환. 아래는 설정들.
+                .claim("category", category)
                 .claim("username", username) //클레임 설정. username
                 .claim("nickname", name) //클레임 설정. username
                 .claim("role", role) //클레임 설정. role

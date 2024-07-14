@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import travility_back.travility.dto.oauth.CustomOAuthUser;
@@ -36,7 +37,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2Response oAuth2Response = null;
         Member member = new Member();
 
-        String accessToken = userRequest.getAccessToken().getTokenValue(); // OAuth2한테 받은 access token
+        String oauth2Token = userRequest.getAccessToken().getTokenValue(); // OAuth2한테 받은 access token
 
         // 회원 소셜타입 정하기
         if (registrationId.equals("naver")) {
@@ -68,7 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             member.setEmail(oAuth2Response.getEmail());
             member.setRole(Role.ROLE_USER);
             member.setCreatedDate(LocalDateTime.now());
-            member.setAccessToken(accessToken);
+            member.setOauth2Token(oauth2Token);
 
             memberRepository.save(member);
 
@@ -102,7 +103,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Member existData = isAlreadyLogin.get();
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
-            existData.setAccessToken(accessToken);
+            existData.setOauth2Token(oauth2Token);
 
             memberRepository.save(existData);
 

@@ -39,7 +39,10 @@ public class Member {
 
     private LocalDateTime createdDate; // 가입일자
 
-    private String accessToken;
+    private String oauth2Token;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>(); //다중 디바이스 고려
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountBook> accountBooks = new ArrayList<>();
