@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import travility_back.travility.config.UploadInform;
 import travility_back.travility.dto.AccountBookDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Member;
@@ -74,7 +75,7 @@ public class AccountBookService {
 
         if(img!=null && !img.isEmpty()){ //이미지가 있을 경우
             //이미지 로컬 서버에 업로드
-            String path = "C:/fullstack/final_project/images/"; //이미지 저장할 서버 주소
+            String path = UploadInform.uploadPath; //이미지 저장할 서버 주소
             String originalName = img.getOriginalFilename(); //파일 원본 이름
             String extension = originalName.substring(originalName.indexOf(".")); //파일 확장자
             String newImgName = UUID.randomUUID().toString() + extension; //새 이미지 이름

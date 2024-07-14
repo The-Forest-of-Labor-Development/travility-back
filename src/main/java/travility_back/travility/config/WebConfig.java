@@ -20,6 +20,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**") //이 도메인으로 요청되는 리소스는
-                .addResourceLocations("file:///fullstack/final_project/images/"); //이 주소에 있는 리소스를 돌려줌 (file:/// : 파일 시스템의 최상위 디렉토리)
+                .addResourceLocations(UploadInform.uploadLocation); //이 주소에 있는 리소스를 돌려줌 (file:/// : 파일 시스템의 최상위 디렉토리)
     }
 }
