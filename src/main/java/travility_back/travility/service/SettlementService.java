@@ -11,6 +11,7 @@ import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class SettlementService {
         for(Budget budget : budgets) {
             String currency = budget.getCurUnit(); //통화 코드
             double amount = budget.getAmount(); //예산 금액
-            double exchangeRate = budget.getExchangeRate(); //환율
+            double exchangeRate = budget.getExchangeRate().doubleValue(); //환율
 
             currencyToTotalAmount.put(currency, currencyToTotalAmount.getOrDefault(currency, 0.0) + amount); //통화 코드별 예산 총 금액
             currencyToAvgExchangeRate.put(currency, currencyToAvgExchangeRate.getOrDefault(currency, 0.0) + exchangeRate * amount); //통화 코드별 가중 합
@@ -52,6 +53,7 @@ public class SettlementService {
 
         return currencyToAvgExchangeRate;
     }
+
 
     //예산의 통화 코드별 공동 경비 합계
     private Double calculateTotalSharedExpensesByCurrency(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {

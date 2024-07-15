@@ -122,21 +122,21 @@ public class CalendarService {
         Map<String, Double> weightedAvgExchangeRates = calculateWeightedAverageExchangeRateByCurrency(budgets);
         List<Expense> expenses = expenseRepository.findByAccountBookId(id);
 
-        BigDecimal totalAmountKRW = BigDecimal.ZERO;
+        double totalAmountKRW = 0.0;
         List<ExpenseDTO> expenseDTOs = new ArrayList<>();
 
         for (Expense expense : expenses) {
             String currency = expense.getCurUnit();
-            BigDecimal amount = BigDecimal.valueOf(expense.getAmount());
-            BigDecimal exchangeRate = BigDecimal.valueOf(weightedAvgExchangeRates.getOrDefault(currency, 1.0));
-            BigDecimal amountInKRW = amount.multiply(exchangeRate).setScale(2, RoundingMode.HALF_UP);
-            totalAmountKRW = totalAmountKRW.add(amountInKRW);
+            double amount = expense.getAmount();
+            double exchangeRate = weightedAvgExchangeRates.getOrDefault(currency, 1.0);
+            double amountInKRW = amount * exchangeRate;
+            totalAmountKRW = totalAmountKRW + amountInKRW;
 
             expenseDTOs.add(new ExpenseDTO(expense));
         }
 
         Map<String, Object> result = new HashMap<>();
-        result.put("totalAmount", totalAmountKRW.doubleValue());
+        result.put("totalAmount", totalAmountKRW);
         result.put("expenses", expenseDTOs);
         result.put("exchangeRates", weightedAvgExchangeRates);
 
@@ -150,24 +150,24 @@ public class CalendarService {
 
     // 가중 평균 환율 계산
     private Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
-        Map<String, BigDecimal> totalAmountByCurrency = new HashMap<>();
-        Map<String, BigDecimal> totalWeightedExchangeRateByCurrency = new HashMap<>();
+        Map<String, Double> totalAmountByCurrency = new HashMap<>();
+        Map<String, Double> totalWeightedExchangeRateByCurrency = new HashMap<>();
 
         for (Budget budget : budgets) {
             String currency = budget.getCurUnit();
-            BigDecimal amount = BigDecimal.valueOf(budget.getAmount());
-            BigDecimal exchangeRate = BigDecimal.valueOf(budget.getExchangeRate());
+            double amount = budget.getAmount();
+            double exchangeRate = budget.getExchangeRate().doubleValue();
 
-            totalAmountByCurrency.put(currency, totalAmountByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount));
-            totalWeightedExchangeRateByCurrency.put(currency, totalWeightedExchangeRateByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount.multiply(exchangeRate)));
+            totalAmountByCurrency.put(currency, totalAmountByCurrency.getOrDefault(currency, 0.0) + amount);
+            totalWeightedExchangeRateByCurrency.put(currency, totalWeightedExchangeRateByCurrency.getOrDefault(currency, 0.0) + amount * exchangeRate);
         }
 
         Map<String, Double> weightedAvgExchangeRates = new HashMap<>();
         for (String currency : totalAmountByCurrency.keySet()) {
-            BigDecimal totalAmount = totalAmountByCurrency.get(currency);
-            BigDecimal totalWeightedExchangeRate = totalWeightedExchangeRateByCurrency.get(currency);
-            BigDecimal weightedAvgExchangeRate = totalWeightedExchangeRate.divide(totalAmount, 2, RoundingMode.HALF_UP); // 소수점 둘째자리까지 저장
-            weightedAvgExchangeRates.put(currency, weightedAvgExchangeRate.doubleValue());
+            double totalAmount = totalAmountByCurrency.get(currency);
+            double totalWeightedExchangeRate = totalWeightedExchangeRateByCurrency.get(currency);
+            double weightedAvgExchangeRate = totalWeightedExchangeRate / totalAmount; // 소수점 둘째자리까지 저장
+            weightedAvgExchangeRates.put(currency, weightedAvgExchangeRate);
         }
 
         return weightedAvgExchangeRates;

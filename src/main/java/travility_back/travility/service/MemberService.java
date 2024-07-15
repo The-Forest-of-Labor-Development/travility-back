@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
@@ -22,6 +23,7 @@ import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -141,6 +143,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Map<String, String> getMemberInfo(CustomUserDetails userDetails) {
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        System.out.println(member.getPassword());
         Map<String, String> map = new HashMap<>();
         map.put("username", member.getUsername());
         map.put("name", member.getName());
@@ -149,6 +152,25 @@ public class MemberService {
         map.put("socialType", member.getSocialType());
         map.put("createdDate", member.getCreatedDate().toString());
         return map;
+    }
+
+    //비밀번호 변경 전, 기존 비밀번호 확인
+    @Transactional(readOnly = true)
+    public boolean confirmPassword(CustomUserDetails userDetails, String password) {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        return bCryptPasswordEncoder.matches(password, member.getPassword()); //사용자가 입력한 비밀번호와 db에 저장된 비밀번호가 같은 지
+    }
+
+    //비밀번호 변경
+    @Transactional
+    public void updatePassword(CustomUserDetails userDetails, String password, HttpServletResponse response) throws IOException {
+        Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(()-> new NoSuchElementException("Member not found"));
+        if (bCryptPasswordEncoder.matches(password, member.getPassword())){ //기존 비밀번호와 일치할 경우
+            response.getWriter().write("Current password matches");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        member.setPassword(bCryptPasswordEncoder.encode(password)); //비밀번호 변경
     }
 
     //일반 회원 탈퇴

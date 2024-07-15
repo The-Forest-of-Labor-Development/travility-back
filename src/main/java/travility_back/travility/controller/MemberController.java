@@ -5,15 +5,18 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import travility_back.travility.dto.CustomUserDetails;
+import travility_back.travility.dto.LoginDTO;
 import travility_back.travility.dto.MemberDTO;
 import travility_back.travility.security.jwt.JWTUtil;
 import travility_back.travility.service.MemberService;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -80,6 +83,18 @@ public class MemberController {
     @GetMapping("/api/users")
     public Map<String, String> getMemberInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return memberService.getMemberInfo(userDetails);
+    }
+
+    //기존 비밀번호 확인
+    @PostMapping("/api/users/confirm-password")
+    public boolean confirmPassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody LoginDTO loginDTO) {
+        return memberService.confirmPassword(userDetails, loginDTO.getPassword());
+    }
+
+    //비밀번호 변경
+    @PostMapping("/api/users/update-password")
+    public void updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody LoginDTO loginDTO, HttpServletResponse response) throws IOException {
+        memberService.updatePassword(userDetails, loginDTO.getPassword(), response);
     }
 
     //회원 탈퇴
