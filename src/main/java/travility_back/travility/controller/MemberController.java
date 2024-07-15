@@ -20,7 +20,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final JWTUtil jwtUtil;
 
     //아이디 중복 확인
     @GetMapping("/api/auth/duplicate-username")
@@ -76,28 +75,28 @@ public class MemberController {
 
     //회원 정보
     @GetMapping("/api/users")
-    public Map<String, String> getMemberInfo(@AuthenticationPrincipal CustomUserDetails member) {
-        return memberService.getMemberInfo(member);
+    public Map<String, String> getMemberInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return memberService.getMemberInfo(userDetails);
     }
 
     //회원 탈퇴
     @DeleteMapping("/api/users")
-    public void deleteMember(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails member) {
-        System.out.println(member.getUsername());
-        String socialType = getMemberInfo(member).get("socialType");
+    public void deleteMember(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        System.out.println(userDetails.getUsername());
+        String socialType = getMemberInfo(userDetails).get("socialType");
         System.out.println(socialType);
 
         if(socialType  == null) {//일반 로그인 사용자
-            memberService.deleteStandardAccount(member);
+            memberService.deleteStandardAccount(userDetails);
             logout(request, response);
         } else if (socialType.equals("naver")) {//네이버 로그인 사용자
-            memberService.deleteNaverAccount(member);
+            memberService.deleteNaverAccount(userDetails);
             logout(request, response);
         } else if (socialType.equals("google")) {//구글 로그인 사용자
-            memberService.deleteGoogleAccount(member);
+            memberService.deleteGoogleAccount(userDetails);
             logout(request, response);
         } else if (socialType.equals("kakao")) { // 카카오
-            memberService.deleteKakaoAccount(member);
+            memberService.deleteKakaoAccount(userDetails);
             logout(request, response);
         }
     }

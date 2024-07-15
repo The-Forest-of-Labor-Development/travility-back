@@ -5,8 +5,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import travility_back.travility.dto.AccountBookDTO;
+import travility_back.travility.dto.BudgetDTO;
 import travility_back.travility.dto.CustomUserDetails;
 import travility_back.travility.service.AccountBookService;
+import travility_back.travility.service.BudgetService;
 import travility_back.travility.service.MemberService;
 
 import java.io.IOException;
@@ -19,7 +21,7 @@ import java.util.Optional;
 public class AccountBookController {
 
     private final AccountBookService accountBookService;
-    private final MemberService memberService;
+    private final BudgetService budgetService;
 
     //전체 가계부 조회
     @GetMapping("/accountbooks")
@@ -28,6 +30,7 @@ public class AccountBookController {
         return accountBookService.getAllAccountBooks(username);
     }
 
+    //가계부 조회
     @GetMapping("/{id}")
     public Optional<AccountBookDTO> getAccountBookById(@PathVariable("id") Long id) {
         return Optional.ofNullable(accountBookService.getAccountBookById(id));
@@ -53,4 +56,9 @@ public class AccountBookController {
         accountBookService.deleteAccountBook(id);
     }
 
+    //예산 수정
+    @PutMapping("/{id}/budget")
+    public List<BudgetDTO> updateBudget(@PathVariable Long id, @RequestBody List<BudgetDTO> budgetDTOs) {
+        return budgetService.updateBudgets(id,budgetDTOs);
+    }
 }

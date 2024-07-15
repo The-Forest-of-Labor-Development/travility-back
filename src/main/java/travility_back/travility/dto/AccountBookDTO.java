@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travility_back.travility.entity.AccountBook;
-import travility_back.travility.entity.Member;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +22,10 @@ public class AccountBookDTO {
     private String title;
     private String imgName;
     private List<BudgetDTO> budgets;
+    private List<ExpenseDTO> expenses;
     private MemberDTO member;
 
-    public AccountBookDTO(AccountBook accountBook){
+    public AccountBookDTO(AccountBook accountBook) {
         this.id = accountBook.getId();
         this.startDate = accountBook.getStartDate();
         this.endDate = accountBook.getEndDate();
@@ -36,7 +35,11 @@ public class AccountBookDTO {
         this.title = accountBook.getTitle();
         this.imgName = accountBook.getImgName();
         this.budgets = accountBook.getBudgets().stream()
-                .map(budget -> new BudgetDTO(budget))
+                .map(BudgetDTO::new)
                 .collect(Collectors.toList());
+        this.expenses = accountBook.getExpenses().stream()
+                .map(ExpenseDTO::new)
+                .collect(Collectors.toList());
+        this.member = new MemberDTO(accountBook.getMember());
     }
 }

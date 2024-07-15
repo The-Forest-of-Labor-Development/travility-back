@@ -64,8 +64,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // db에 사용자 없으면 새로 등록하기
         if (isAlreadyLogin.isEmpty()) {
             member.setUsername(username);
-            member.setEmail(oAuth2Response.getEmail());
             member.setName(oAuth2Response.getName());
+            member.setEmail(oAuth2Response.getEmail());
             member.setRole(Role.ROLE_USER);
             member.setCreatedDate(LocalDateTime.now());
             member.setAccessToken(accessToken);

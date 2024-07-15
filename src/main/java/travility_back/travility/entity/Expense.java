@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
@@ -50,4 +51,16 @@ public class Expense {
     private Category category; // 지출종류 [TRANSPORTATION, ACCOMMODATION, FOOD, TOURISM, SHOPPING, OTHERS]
 
     private String curUnit; // 화폐 단위
+
+    public Expense(ExpenseDTO expenseDTO, AccountBook accountBook) {
+        this.title = expenseDTO.getTitle();
+        this.expenseDate = expenseDTO.getExpenseDate();
+        this.category = expenseDTO.getCategory();
+        this.paymentMethod = expenseDTO.getPaymentMethod();
+        this.curUnit = expenseDTO.getCurUnit();
+        this.amount = expenseDTO.getAmount();
+        this.isShared = expenseDTO.isShared();
+        this.memo = expenseDTO.getMemo();
+        this.accountBook = accountBook;
+    }
 }

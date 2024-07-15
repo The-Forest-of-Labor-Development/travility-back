@@ -33,6 +33,7 @@ class MemberTests {
         MemberDTO memberDTO = new MemberDTO();
         for(int i = 101; i<=130; i++){
             memberDTO.setUsername("testuser"+i);
+            memberDTO.setUsername("testname"+i);
             memberDTO.setPassword("testuser"+i+"!");
             memberDTO.setEmail("testuser"+i+"@example.com");
             memberService.signup(memberDTO);

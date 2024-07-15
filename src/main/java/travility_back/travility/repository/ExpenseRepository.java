@@ -13,8 +13,9 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     /**
-     * 마이리포트
+     * 마이리포트 페이지 노출
      */
+
     // 카테고리별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
     @Query("select e.category, FLOOR(SUM(case when e.isShared = true then e.amount / ab.numberOfPeople else e.amount end)) " +
             "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.category")
@@ -25,7 +26,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
 
+    List<Expense> findByAccountBookId(Long accountbookId);
 
+    @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.accountBook.id=:accountbookId and e.expenseDate BETWEEN :startDate AND :endDate")
+    Double findTotalAmountByDateRange(@Param("accountbookId") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     /**
      * 지출통계

@@ -1,25 +1,36 @@
 package travility_back.travility.service.schedule;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import travility_back.travility.dto.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
+import travility_back.travility.entity.Budget;
+import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.Member;
 import travility_back.travility.repository.AccountBookRepository;
+import travility_back.travility.repository.BudgetRepository;
+import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
+    private static final Logger logger = LoggerFactory.getLogger(CalendarService.class);
 
     private final AccountBookRepository accountBookRepository;
     private final MemberRepository memberRepository;
+    private final ExpenseRepository expenseRepository;
+    private final BudgetRepository budgetRepository;
 
     /**
      * <p>{@code getMemberByUsername()} username으로 memberId 조회</p>
@@ -41,6 +52,7 @@ public class CalendarService {
         return accountBookRepository.findByMemberId(memberId);
     }
 
+
     // username으로 일정(event) 가져오기
     public List<Map<String, Object>> getAccountBooksEventsByUsername(String username) {
         Long memberId = getMemberIdByUsername(username);
@@ -55,14 +67,109 @@ public class CalendarService {
             String key = book.getStartDate().toString() + book.getEndDate().toString();
             if (!uniqueEvents.containsKey(key)) { // key가 중복되지 않았을 때만 일정을 추가해줌.
                 Map<String, Object> event = new HashMap<>();
+                event.put("accountbookId", book.getId()); //가계부 아이디
                 event.put("title", book.getTitle()); // 제목 설정
                 event.put("start", book.getStartDate().toString()); // 일정 시작 날짜 설정
                 event.put("end", book.getEndDate().toString()); // 일정 종료 날짜 설정
+                event.put("countryName", book.getCountryName()); //나라 이름
+                event.put("imgName", book.getImgName()); //대표 이미지
                 uniqueEvents.put(key, event); // Map에 넣어버리기
             }
         }
 
         // 추가한 일정을 리스트로 반환함
         return new ArrayList<>(uniqueEvents.values());
+    }
+
+
+    public Map<LocalDate, Double> getExpenseByDay(Long id) {
+
+        //id로 가계부 찾기
+        logger.debug("Getting expenses by day for accountBookId: {}", id);
+        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("accountbook not found"));
+
+        //가계부에서 여행 시작 날짜와 종료 날짜 추출
+        LocalDate startDate = accountBook.getStartDate();
+        LocalDate endDate = accountBook.getEndDate();
+        //7.4 ~ 7.6
+
+        //날짜와 총합을 저장할 map
+        Map<LocalDate, Double> map = new HashMap<>();
+
+        while (!startDate.isAfter(endDate)) {
+            LocalDateTime start = startDate.atStartOfDay(); //현재 날짜 시작 00:00:00
+            LocalDateTime end = startDate.plusDays(1).atStartOfDay(); //내일 날짜 시작 00:00:00
+            Double sum = expenseRepository.findTotalAmountByDateRange(id, start, end); //해당 날짜의 총합 가져오기
+            map.put(startDate, sum != null ? sum : 0.0); //추가 //2024-07-04 320000  //2024-07-05 400000
+            logger.debug("Date: {}, Sum: {}", startDate, sum);
+            startDate = startDate.plusDays(1);
+        }
+        return map;
+    }
+
+
+    // accountbookId 로 모든 expense 가져오기
+    public List<Expense> getAllExpensesByAccountbookId(Long accountbookId) {
+        return expenseRepository.findByAccountBookId(accountbookId);
+    }
+
+    //지출액 총합 계산(가중 평균)
+    public Map<String, Object> calculateTotalExpenses(Long id) {
+        AccountBook accountBook = accountBookRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
+        List<Budget> budgets = budgetRepository.findByAccountBookId(id);
+
+        Map<String, Double> weightedAvgExchangeRates = calculateWeightedAverageExchangeRateByCurrency(budgets);
+        List<Expense> expenses = expenseRepository.findByAccountBookId(id);
+
+        BigDecimal totalAmountKRW = BigDecimal.ZERO;
+        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
+
+        for (Expense expense : expenses) {
+            String currency = expense.getCurUnit();
+            BigDecimal amount = BigDecimal.valueOf(expense.getAmount());
+            BigDecimal exchangeRate = BigDecimal.valueOf(weightedAvgExchangeRates.getOrDefault(currency, 1.0));
+            BigDecimal amountInKRW = amount.multiply(exchangeRate).setScale(2, RoundingMode.HALF_UP);
+            totalAmountKRW = totalAmountKRW.add(amountInKRW);
+
+            expenseDTOs.add(new ExpenseDTO(expense));
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalAmount", totalAmountKRW.doubleValue());
+        result.put("expenses", expenseDTOs);
+        result.put("exchangeRates", weightedAvgExchangeRates);
+
+        System.out.println("Weighted Average Exchange Rates: " + weightedAvgExchangeRates);
+        System.out.println("Total Amount in KRW: " + totalAmountKRW);
+        System.out.println("Expenses: " + expenseDTOs);
+
+        return result;
+    }
+
+
+    // 가중 평균 환율 계산
+    private Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
+        Map<String, BigDecimal> totalAmountByCurrency = new HashMap<>();
+        Map<String, BigDecimal> totalWeightedExchangeRateByCurrency = new HashMap<>();
+
+        for (Budget budget : budgets) {
+            String currency = budget.getCurUnit();
+            BigDecimal amount = BigDecimal.valueOf(budget.getAmount());
+            BigDecimal exchangeRate = BigDecimal.valueOf(budget.getExchangeRate());
+
+            totalAmountByCurrency.put(currency, totalAmountByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount));
+            totalWeightedExchangeRateByCurrency.put(currency, totalWeightedExchangeRateByCurrency.getOrDefault(currency, BigDecimal.ZERO).add(amount.multiply(exchangeRate)));
+        }
+
+        Map<String, Double> weightedAvgExchangeRates = new HashMap<>();
+        for (String currency : totalAmountByCurrency.keySet()) {
+            BigDecimal totalAmount = totalAmountByCurrency.get(currency);
+            BigDecimal totalWeightedExchangeRate = totalWeightedExchangeRateByCurrency.get(currency);
+            BigDecimal weightedAvgExchangeRate = totalWeightedExchangeRate.divide(totalAmount, 2, RoundingMode.HALF_UP); // 소수점 둘째자리까지 저장
+            weightedAvgExchangeRates.put(currency, weightedAvgExchangeRate.doubleValue());
+        }
+
+        return weightedAvgExchangeRates;
     }
 }
