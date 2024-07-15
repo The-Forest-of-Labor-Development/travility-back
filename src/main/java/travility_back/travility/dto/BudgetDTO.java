@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travility_back.travility.entity.Budget;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class BudgetDTO {
     @JsonProperty("isShared")
     private boolean isShared;
     private String curUnit;
-    private double exchangeRate;
+    private BigDecimal exchangeRate;
     private double amount;
 
     public BudgetDTO(Budget budget){

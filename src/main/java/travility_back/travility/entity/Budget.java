@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import travility_back.travility.dto.BudgetDTO;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -24,7 +26,8 @@ public class Budget {
 
     private String curUnit; //통화 코드
 
-    private double exchangeRate; //환율
+    @Column(precision = 10, scale = 2)
+    private BigDecimal exchangeRate; //환율
 
     private double amount; //금액
 
