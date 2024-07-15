@@ -119,7 +119,9 @@ public class StatisticService {
             throw new UsernameNotFoundException(username); // 사용자 없으면
         }
     }
-////////////////////////////////////////////
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * 날짜별로 카테고리 지출 금액 가져오는 메서드
      */
@@ -177,25 +179,32 @@ public class StatisticService {
         return totalBudget - totalExpense;
     }
 
-    // 라디오 버튼(라인차트)
+    /**
+     * 라인차트
+     * 사용자의 특정 가계부에 대한 날짜별 총 지출 금액 조회 (전체)
+     */
     public List<DateCategoryAmountDTO> getStatisticsByDates(Long accountBookId, Long memberId) {
-        List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId);
-        return results.stream()
-                .map(result -> new DateCategoryAmountDTO(
-                        ((LocalDate) result[0]).toString(),
-                        null,
-                        (Double) result[1]
+        List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId); // 특정 가계부에 대한 날짜별 총 지출 금액 조회
+        return results.stream() // 조회한 결과를 DTO객체로 변환 후 리스트형태로 반환
+                .map(result -> new DateCategoryAmountDTO( // 맞나 모름
+                        ((LocalDate) result[0]).toString(), 
+                        null, // 지출 날짜 표현할거니까 문자열로 바꿔주고 카테고리는 null
+                        (Double) result[1] // 지출 금액
                 ))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 라인차트
+     * 사용자의 특정 가계부에 대한 날짜별 + 카테고리별 총 지출 금액 조회
+     */
     public List<DateCategoryAmountDTO> getStatisticsByCategoryAndDates(Long accountBookId, Long memberId, List<Category> categories) {
         List<Object[]> results = expenseRepository.findTotalAmountByDatesAndCategories(accountBookId, memberId, categories);
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
                         ((LocalDate) result[0]).toString(),
-                        (Category) result[1],
-                        (Double) result[2]
+                        (Category) result[1], // 전체 아니라서 카테고리 설정
+                        (Double) result[2] // 지출 금액
                 ))
                 .collect(Collectors.toList());
     }
