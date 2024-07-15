@@ -8,6 +8,7 @@ import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.enums.Category;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
