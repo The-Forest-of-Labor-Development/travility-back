@@ -1,5 +1,6 @@
 package travility_back.travility.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,7 +27,8 @@ public class Expense {
     private String title; // 항목명
 
     @Column(nullable = false)
-    private LocalDateTime expenseDate; // 지출일자
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate expenseDate; // 지출일자
 
     @Column(nullable = false)
     private double amount; // 지출금액
