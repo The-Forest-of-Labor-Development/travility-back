@@ -23,7 +23,7 @@ public class PasswordController {
 
     //비밀번호 찾기
     @PostMapping("/api/users/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody MemberDTO memberDTO) throws MessagingException {
+    public ResponseEntity<?> forgotPassword(@RequestBody MemberDTO memberDTO){
         return passwordService.forgotPassword(memberDTO.getUsername(), memberDTO.getEmail());
     }
 

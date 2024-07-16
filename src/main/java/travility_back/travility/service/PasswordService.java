@@ -33,7 +33,7 @@ public class PasswordService {
     private String fromEmail;
 
     @Transactional
-    public ResponseEntity<?> forgotPassword(String username, String email) throws MessagingException {
+    public ResponseEntity<?> forgotPassword(String username, String email){
         Optional<Member> optionalMember = memberRepository.findByUsername(username);
 
         //username을 가진 사용자가 없을 경우
@@ -63,7 +63,7 @@ public class PasswordService {
         //이메일 전송
         try{
             sendTemporaryPasswordEmail(email, temporaryPassword);
-        }catch (MessagingException e){
+        }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>("Failed to send email", HttpStatus.INTERNAL_SERVER_ERROR);
         }

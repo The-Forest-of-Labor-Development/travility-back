@@ -4,11 +4,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import travility_back.travility.entity.Expense;
+import travility_back.travility.entity.enums.Category;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+
+    List<Expense> findByAccountBookId(Long accountbookId);
 
     /**
      * 마이리포트 페이지 노출
@@ -24,13 +28,20 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
 
-    List<Expense> findByAccountBookId(Long accountbookId);
+    /**
+     * 정산하기
+     */
+
+    @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.curUnit = :curUnit and e.isShared = true")
+    List<Expense> findSharedExpensesByAccountBookIdAndCurUnit(@Param("accountBookId")Long accountBookId, @Param("curUnit")String curUnit);
+
+    /**
+     * 캘린더
+     */
 
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.accountBook.id=:accountbookId and e.expenseDate BETWEEN :startDate AND :endDate")
     Double findTotalAmountByDateRange(@Param("accountbookId") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.curUnit = :curUnit and e.isShared = true")
-    List<Expense> findSharedExpensesByAccountBookIdAndCurUnit(@Param("accountBookId")Long accountBookId, @Param("curUnit")String curUnit);
 
     /**
      * 지출통계
