@@ -2,9 +2,9 @@ spring:
   jwt:
     secret: 15b86a423862e4744d84a72dfeaa1a8ed98619816f4002638383e402f99699cbb195bce322d41b11cb9b00e0886fbbff8c01e2eb10a06ed28ff3f3a50ed50e7b
   datasource:
-    url: jdbc:mysql://localhost:3306/travility
-    username: root
-    password: admin
+    url: jdbc:mysql://localhost:3306/travilitydb
+    username: travilityuser
+    password: travilityuser
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     oauth2:
@@ -59,6 +59,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: travility4@gmail.com
+    password: fbdoutbpqjinswdq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
