@@ -71,7 +71,7 @@ public class StatisticController {
         return ResponseEntity.ok(statistics);
     }
 
-//==예산 - 지출==//
+    //==예산 - 지출==//
 
     /**
      * 총 예산 가져오기
@@ -125,18 +125,4 @@ public class StatisticController {
         return ResponseEntity.ok(statistics);
     }
 
-
-
-
-
-
-
-//    @GetMapping("/statistics/categoryDateAmount")
-//    public ResponseEntity<List<CategoryDateAmountDTO>> getCategoryAmountByDate(@RequestParam Long accountBookId, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Long memberId = statisticService.getMemberIdByUsername(username);
-//        List<CategoryDateAmountDTO> statistics = statisticService.getCategoryAmountByDate(accountBookId, memberId, startDate, endDate);
-//        return ResponseEntity.ok(statistics);
-
-//    }
 }
