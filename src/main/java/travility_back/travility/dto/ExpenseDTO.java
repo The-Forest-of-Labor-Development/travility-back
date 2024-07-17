@@ -20,7 +20,7 @@ public class ExpenseDTO {
     private Long id;
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone ="Asia/Seoul")
-    private LocalDate expenseDate;
+    private LocalDateTime expenseDate;
     private double amount;
     @JsonProperty("isShared")
     private boolean isShared;
