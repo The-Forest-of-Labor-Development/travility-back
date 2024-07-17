@@ -14,6 +14,7 @@ import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -129,7 +130,7 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDateAndCategory(accountBookId, memberId);
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
-                        ((LocalDate) result[0]).toString(),
+                        ((LocalDateTime) result[0]).toString(),
                         (Category) result[1],
                         (Double) result[2]
                 ))
@@ -139,7 +140,7 @@ public class StatisticService {
     /**
      * 날짜별로 지출 방법별 금액 가져오기
      */
-    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDate date) {
+    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDateTime date) {
         List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, date);
         return results.stream()
                 .map(result -> new PaymentMethodAmountDTO(
@@ -162,7 +163,6 @@ public class StatisticService {
                 ))
                 .collect(Collectors.toList());
     }
-
 
     // 예산 - 지출
     public Double getTotalBudgetByAccountBookId(Long accountBookId) {
@@ -187,7 +187,7 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId); // 특정 가계부에 대한 날짜별 총 지출 금액 조회
         return results.stream() // 조회한 결과를 DTO객체로 변환 후 리스트형태로 반환
                 .map(result -> new DateCategoryAmountDTO( // 맞나 모름
-                        ((LocalDate) result[0]).toString(), 
+                        ((LocalDateTime) result[0]).toString(),
                         null, // 지출 날짜 표현할거니까 문자열로 바꿔주고 카테고리는 null
                         (Double) result[1] // 지출 금액
                 ))
@@ -202,12 +202,13 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDatesAndCategories(accountBookId, memberId, categories);
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
-                        ((LocalDate) result[0]).toString(),
+                        ((LocalDateTime) result[0]).toString(),
                         (Category) result[1], // 전체 아니라서 카테고리 설정
                         (Double) result[2] // 지출 금액
                 ))
                 .collect(Collectors.toList());
     }
+
 
 
 
