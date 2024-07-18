@@ -15,12 +15,9 @@ import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -122,13 +119,15 @@ public class CalendarService {
         Map<String, Double> weightedAvgExchangeRates = calculateWeightedAverageExchangeRateByCurrency(budgets);
         List<Expense> expenses = expenseRepository.findByAccountBookId(id);
 
+        System.out.println(weightedAvgExchangeRates);
+
         double totalAmountKRW = 0.0;
         List<ExpenseDTO> expenseDTOs = new ArrayList<>();
 
         for (Expense expense : expenses) {
             String currency = expense.getCurUnit();
             double amount = expense.getAmount();
-            double exchangeRate = weightedAvgExchangeRates.getOrDefault(currency, 1.0);
+            double exchangeRate = weightedAvgExchangeRates.get(currency);
             double amountInKRW = amount * exchangeRate;
             totalAmountKRW = totalAmountKRW + amountInKRW;
 
