@@ -50,7 +50,6 @@ public class AccountBookService {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("Member not found with username: " + username));
         AccountBook accountBook = new AccountBook(accountBookDTO);
         accountBook.setMember(member);
-        accountBook.setImgName("default_image.png");
         accountBookRepository.save(accountBook);
         return new AccountBookDTO(accountBook);
     }
@@ -83,7 +82,7 @@ public class AccountBookService {
 
             System.out.println(originalName);
             //기존 이미지 파일 삭제
-            if(accountBook.getImgName().equals("default_image.png") == false && accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
+            if(accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()){
                 File oldImg = new File(path,accountBook.getImgName());
                 if (oldImg.exists()){
                     oldImg.delete();

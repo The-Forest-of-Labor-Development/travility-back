@@ -9,9 +9,7 @@ import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
