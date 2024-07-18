@@ -24,10 +24,17 @@ public class AccountBookController {
     private final BudgetService budgetService;
 
     //전체 가계부 조회
+//    @GetMapping("/accountbooks")
+//    public List<AccountBookDTO> getAllAccountBooks(@AuthenticationPrincipal CustomUserDetails userDetails) {
+//        String username = userDetails.getUsername();
+//        return accountBookService.getAllAccountBooks(username);
+//    }
+
+    //전체 가계부 조회(정렬)
     @GetMapping("/accountbooks")
-    public List<AccountBookDTO> getAllAccountBooks(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public List<AccountBookDTO> getAllAccountBooks(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam(defaultValue = "new") String sort) {
         String username = userDetails.getUsername();
-        return accountBookService.getAllAccountBooks(username);
+        return accountBookService.getAllAccountBooks(username, sort);
     }
 
     //가계부 조회
