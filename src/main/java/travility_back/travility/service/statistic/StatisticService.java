@@ -208,10 +208,4 @@ public class StatisticService {
                 ))
                 .collect(Collectors.toList());
     }
-
-
-
-
-
-
 }
