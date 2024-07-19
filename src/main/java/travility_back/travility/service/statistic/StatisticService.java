@@ -132,7 +132,7 @@ public class StatisticService {
                 .map(result -> new DateCategoryAmountDTO(
                         ((LocalDateTime) result[0]).toString(),
                         (Category) result[1],
-                        (Double) result[2]
+                        convertToDouble(result[2])
                 ))
                 .collect(Collectors.toList());
     }
@@ -145,7 +145,7 @@ public class StatisticService {
         return results.stream()
                 .map(result -> new PaymentMethodAmountDTO(
                         (PaymentMethod) result[0],
-                        (Double) result[1]
+                        convertToDouble(result[1])
                 ))
                 .collect(Collectors.toList());
     }
@@ -159,7 +159,7 @@ public class StatisticService {
                 .map(result -> new DateCategoryAmountDTO(
                         "TOTAL",
                         (Category) result[0],
-                        (Double) result[1]
+                        convertToDouble(result[1])
                 ))
                 .collect(Collectors.toList());
     }
@@ -189,7 +189,7 @@ public class StatisticService {
                 .map(result -> new DateCategoryAmountDTO( // 맞나 모름
                         ((LocalDateTime) result[0]).toString(),
                         null, // 지출 날짜 표현할거니까 문자열로 바꿔주고 카테고리는 null
-                        (Double) result[1] // 지출 금액
+                        convertToDouble(result[1]) // 지출 금액
                 ))
                 .collect(Collectors.toList());
     }
@@ -204,8 +204,19 @@ public class StatisticService {
                 .map(result -> new DateCategoryAmountDTO(
                         ((LocalDateTime) result[0]).toString(),
                         (Category) result[1], // 전체 아니라서 카테고리 설정
-                        (Double) result[2] // 지출 금액
+                        convertToDouble(result[2]) // 지출 금액
                 ))
                 .collect(Collectors.toList());
+    }
+
+    // Integer -> Double 캐스팅 해결용
+    private Double convertToDouble(Object value) {
+        if (value instanceof Integer) {
+            return ((Integer) value).doubleValue();
+        } else if (value instanceof Double) {
+            return (Double) value;
+        } else {
+            throw new ClassCastException("Unexpected value type: " + value.getClass().getName());
+        }
     }
 }
