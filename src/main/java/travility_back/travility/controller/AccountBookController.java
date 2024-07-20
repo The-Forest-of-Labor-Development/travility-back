@@ -1,6 +1,8 @@
 package travility_back.travility.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,5 +69,11 @@ public class AccountBookController {
     @PutMapping("/{id}/budget")
     public List<BudgetDTO> updateBudget(@PathVariable Long id, @RequestBody List<BudgetDTO> budgetDTOs) {
         return budgetService.updateBudgets(id,budgetDTOs);
+    }
+
+    //가계부 엑셀화 내보내기
+    @GetMapping("/{id}/export")
+    public ResponseEntity<?> exportAccountBookToExcel(@PathVariable Long id, @RequestParam boolean krw) {
+        return accountBookService.exportAccountBookToExcel(id,krw);
     }
 }

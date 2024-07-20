@@ -87,4 +87,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("select e.expenseDate, e.category, SUM(case when e.isShared = true then floor(e.amount / ab.numberOfPeople) else floor(e.amount) end) " +
             "from Expense e JOIN e.accountBook ab WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.category in :categories GROUP BY e.expenseDate, e.category")
     List<Object[]> findTotalAmountByDatesAndCategories(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("categories") List<Category> categories);
+
+    /**
+     * 가계부 엑셀화
+     */
+    //공유 경비 지출
+    @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.isShared = true")
+    List<Expense> findSharedExpensesByAccountBookId(@Param("accountBookId") Long accountBookId);
+
+    //개인 경비 지출
+    @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.isShared = false")
+    List<Expense> findPersonalExpensesAccountBookId(@Param("accountBookId") Long accountBookId);
 }
