@@ -19,6 +19,7 @@ import travility_back.travility.util.CalcUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,18 +39,13 @@ public class CalendarService {
 
     // username으로 id찾기
     public Long getMemberIdByUsername(String username) {
-        // username으로 member객체 찾기
-        Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 사용자 찾을 수 없음"));
-        return member.getId();
+        return memberRepository.findByUsername(username).map((member) -> member.getId()).orElseThrow(() -> new UsernameNotFoundException("Member not found"));
     }
 
     // 사용자 id로 그 사용자의 모든 account_book 조회
     public List<AccountBook> getAccountBooksByMemberId(Long memberId) {
-        // 리스트로 빼옴
         return accountBookRepository.findByMemberId(memberId);
     }
-
 
     // username으로 일정(event) 가져오기
     public List<Map<String, Object>> getAccountBooksEventsByUsername(String username) {
@@ -81,7 +77,6 @@ public class CalendarService {
 
 
     public Map<LocalDate, Double> getExpenseByDay(Long id) {
-
         //id로 가계부 찾기
         logger.debug("Getting expenses by day for accountBookId: {}", id);
         AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("accountbook not found"));
@@ -105,7 +100,6 @@ public class CalendarService {
         return map;
     }
 
-
     // accountbookId 로 모든 expense 가져오기
     public List<Expense> getAllExpensesByAccountbookId(Long accountbookId) {
         return expenseRepository.findByAccountBookId(accountbookId);
@@ -113,36 +107,17 @@ public class CalendarService {
 
     //지출액 총합 계산(가중 평균)
     public Map<String, Object> calculateTotalExpenses(Long id) {
-        AccountBook accountBook = accountBookRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
-        List<Budget> budgets = budgetRepository.findByAccountBookId(id);
+        List<Budget> budgets = budgetRepository.findByAccountBookId(id); //가계부 예산
+        List<Expense> expenses = expenseRepository.findByAccountBookId(id); //가계부 지출
 
-        Map<String, Double> weightedAvgExchangeRates = CalcUtil.calculateWeightedAverageExchangeRateByCurrency(budgets);
-        List<Expense> expenses = expenseRepository.findByAccountBookId(id);
-
-        System.out.println(weightedAvgExchangeRates);
-
-        double totalAmountKRW = 0.0;
-        List<ExpenseDTO> expenseDTOs = new ArrayList<>();
-
-        for (Expense expense : expenses) {
-            String currency = expense.getCurUnit();
-            double amount = expense.getAmount();
-            double exchangeRate = weightedAvgExchangeRates.get(currency);
-            double amountInKRW = amount * exchangeRate;
-            totalAmountKRW = totalAmountKRW + amountInKRW;
-
-            expenseDTOs.add(new ExpenseDTO(expense));
-        }
+        Map<String, Double> weightedAvgExchangeRates = CalcUtil.calculateWeightedAverageExchangeRateByCurrency(budgets); //가중 평균 환율
+        List<ExpenseDTO> expenseDTOs = expenses.stream().map((expense -> new ExpenseDTO(expense))).collect(Collectors.toList()); //지출 목록
+        double totalAmountKRW = CalcUtil.calculateTotalExpensesByCurrency(expenses, weightedAvgExchangeRates); //지출 총합
 
         Map<String, Object> result = new HashMap<>();
         result.put("totalAmount", totalAmountKRW);
         result.put("expenses", expenseDTOs);
         result.put("exchangeRates", weightedAvgExchangeRates);
-
-        System.out.println("Weighted Average Exchange Rates: " + weightedAvgExchangeRates);
-        System.out.println("Total Amount in KRW: " + totalAmountKRW);
-        System.out.println("Expenses: " + expenseDTOs);
 
         return result;
     }
