@@ -13,18 +13,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.CustomLogoutFilter;
-import travility_back.travility.security.error.CustomAccessDeniedHandler;
-import travility_back.travility.security.oauth.CustomSuccessHandler;
-import travility_back.travility.security.LoginFilter;
+import travility_back.travility.security.handler.error.CustomAccessDeniedHandler;
+import travility_back.travility.security.handler.OAuth2LoginSuccessHandler;
+import travility_back.travility.security.filter.LoginFilter;
 import travility_back.travility.security.jwt.JWTFilter;
 import travility_back.travility.security.jwt.JWTUtil;
-import travility_back.travility.service.CustomOAuth2UserService;
+import travility_back.travility.security.service.CustomOAuth2UserService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +36,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomSuccessHandler customSuccessHandler;
+    private final OAuth2LoginSuccessHandler OAuth2LoginSuccessHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -50,11 +49,6 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
     }
 
     @Bean
@@ -87,7 +81,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/","/api/auth/**","/api/login", "/api/logout","/api/signup", "/api/settlement/**", "/api/users/forgot-password","/images/**").permitAll()
+                        .requestMatchers("/","/api/auth/**","/api/login","/api/signup", "/api/settlement/**", "/api/users/forgot-password","/images/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
@@ -114,7 +108,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig // 뭔지모름
                                 .userService(customOAuth2UserService)) // 사용자 정보 가져오기
-                        .successHandler(customSuccessHandler) // 성공 후 실행
+                        .successHandler(OAuth2LoginSuccessHandler) // 성공 후 실행
                 );
 
         return http.build();

@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import travility_back.travility.dto.CustomUserDetails;
-import travility_back.travility.dto.MemberDTO;
-import travility_back.travility.entity.Member;
+
+import travility_back.travility.dto.auth.CustomUserDetails;
+import travility_back.travility.dto.member.MemberDTO;
+
 import travility_back.travility.entity.enums.Role;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -40,8 +40,6 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(token);
         }catch (ExpiredJwtException e){
             System.out.println("access token expired");
-
-            //response
             response.getWriter().write("access token expired");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
@@ -50,7 +48,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(token);
 
         if(!category.equals("access")){ //페이로드에 명시된 카테고리가 access가 아닌 경우
-            //response
             response.getWriter().write("invalid access token");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
