@@ -15,6 +15,7 @@ import travility_back.travility.repository.MemberRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ public class StatisticService {
     private final ExpenseRepository expenseRepository;
     private final MemberRepository memberRepository;
     private final BudgetRepository budgetRepository;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); // toString()대신 사용
 
     // 사용자 통계 데이터 가져오기
     public MyReportExpenseStatisticsDTO getStatistics(Long memberId) {
@@ -130,7 +132,7 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDateAndCategory(accountBookId, memberId);
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
-                        ((LocalDateTime) result[0]).toString(),
+                        ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
                         (Category) result[1],
                         convertToDouble(result[2])
                 ))
@@ -187,7 +189,7 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId); // 특정 가계부에 대한 날짜별 총 지출 금액 조회
         return results.stream() // 조회한 결과를 DTO객체로 변환 후 리스트형태로 반환
                 .map(result -> new DateCategoryAmountDTO( // 맞나 모름
-                        ((LocalDateTime) result[0]).toString(),
+                        ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
                         null, // 지출 날짜 표현할거니까 문자열로 바꿔주고 카테고리는 null
                         convertToDouble(result[1]) // 지출 금액
                 ))
@@ -202,7 +204,7 @@ public class StatisticService {
         List<Object[]> results = expenseRepository.findTotalAmountByDatesAndCategories(accountBookId, memberId, categories);
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
-                        ((LocalDateTime) result[0]).toString(),
+                        ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
                         (Category) result[1], // 전체 아니라서 카테고리 설정
                         convertToDouble(result[2]) // 지출 금액
                 ))
