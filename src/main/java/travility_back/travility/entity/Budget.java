@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import travility_back.travility.dto.BudgetDTO;
+import travility_back.travility.dto.accountbook.BudgetDTO;
 
 import java.math.BigDecimal;
 

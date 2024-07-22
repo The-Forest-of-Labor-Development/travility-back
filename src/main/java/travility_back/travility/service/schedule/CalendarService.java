@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import travility_back.travility.dto.ExpenseDTO;
+import travility_back.travility.dto.accountbook.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Budget;
 import travility_back.travility.entity.Expense;
@@ -14,6 +14,7 @@ import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
+import travility_back.travility.util.CalcUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -116,7 +117,7 @@ public class CalendarService {
                 .orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
         List<Budget> budgets = budgetRepository.findByAccountBookId(id);
 
-        Map<String, Double> weightedAvgExchangeRates = calculateWeightedAverageExchangeRateByCurrency(budgets);
+        Map<String, Double> weightedAvgExchangeRates = CalcUtil.calculateWeightedAverageExchangeRateByCurrency(budgets);
         List<Expense> expenses = expenseRepository.findByAccountBookId(id);
 
         System.out.println(weightedAvgExchangeRates);
@@ -144,31 +145,5 @@ public class CalendarService {
         System.out.println("Expenses: " + expenseDTOs);
 
         return result;
-    }
-
-
-    // 가중 평균 환율 계산
-    private Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
-        Map<String, Double> totalAmountByCurrency = new HashMap<>();
-        Map<String, Double> totalWeightedExchangeRateByCurrency = new HashMap<>();
-
-        for (Budget budget : budgets) {
-            String currency = budget.getCurUnit();
-            double amount = budget.getAmount();
-            double exchangeRate = budget.getExchangeRate().doubleValue();
-
-            totalAmountByCurrency.put(currency, totalAmountByCurrency.getOrDefault(currency, 0.0) + amount);
-            totalWeightedExchangeRateByCurrency.put(currency, totalWeightedExchangeRateByCurrency.getOrDefault(currency, 0.0) + amount * exchangeRate);
-        }
-
-        Map<String, Double> weightedAvgExchangeRates = new HashMap<>();
-        for (String currency : totalAmountByCurrency.keySet()) {
-            double totalAmount = totalAmountByCurrency.get(currency);
-            double totalWeightedExchangeRate = totalWeightedExchangeRateByCurrency.get(currency);
-            double weightedAvgExchangeRate = totalWeightedExchangeRate / totalAmount; // 소수점 둘째자리까지 저장
-            weightedAvgExchangeRates.put(currency, weightedAvgExchangeRate);
-        }
-
-        return weightedAvgExchangeRates;
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import travility_back.travility.dto.CustomUserDetails;
-import travility_back.travility.dto.ExpenseDTO;
+import travility_back.travility.dto.auth.CustomUserDetails;
+import travility_back.travility.dto.accountbook.ExpenseDTO;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.service.schedule.CalendarService;
 

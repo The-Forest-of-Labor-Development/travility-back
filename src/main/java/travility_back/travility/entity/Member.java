@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import travility_back.travility.dto.MemberDTO;
+import travility_back.travility.dto.member.MemberDTO;
 import travility_back.travility.entity.enums.Role;
 
 import java.time.LocalDateTime;
