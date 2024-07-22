@@ -21,11 +21,11 @@ import static org.mockito.Mockito.when;
 
 public class StatisticTest {
 
-    // expenserepo 의존관계 제거 후 mock으로 만들기
+    // 목객체화
     @Mock
     private ExpenseRepository expenseRepository;
 
-    // mock 주입받는 서비스
+    // 목객체가 주입받는 서비스 (@Mock을 여기에 주입)
     @InjectMocks
     private StatisticService statisticService;
 
