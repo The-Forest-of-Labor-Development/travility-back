@@ -19,13 +19,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
 
     // 카테고리별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
-    @Query("select e.category, FLOOR(SUM(case when e.isShared = true then e.amount / ab.numberOfPeople else e.amount end)) " +
-            "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.category")
+    @Query("select e.category, FLOOR(SUM(case when e.isShared = true then (e.amount / ab.numberOfPeople) * b.exchangeRate else e.amount * b.exchangeRate end)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id WHERE ab.member.id = :memberId GROUP BY e.category")
     List<Object[]> findTotalAmountByCategory(@Param("memberId") Long memberId);
 
     // 결제 방법별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
-    @Query("select e.paymentMethod, FLOOR(SUM(case when e.isShared = true then e.amount / ab.numberOfPeople else e.amount end)) " +
-            "from Expense e JOIN e.accountBook ab WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
+    @Query("select e.paymentMethod, FLOOR(SUM(case when e.isShared = true then (e.amount / ab.numberOfPeople) * b.exchangeRate else e.amount * b.exchangeRate end)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
 
     /**
