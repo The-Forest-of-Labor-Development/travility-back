@@ -187,7 +187,7 @@ public class StatisticService {
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
                         ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
-                        null,
+                        null, // 전체라 카테고리 상관없음
                         convertToDouble(result[1])
                 ))
                 .collect(Collectors.toList());
@@ -208,7 +208,7 @@ public class StatisticService {
                 .collect(Collectors.toList());
     }
 
-    // Integer -> Double 캐스팅 해결용
+    // Integer -> Double 캐스팅
     private Double convertToDouble(Object value) {
         if (value instanceof Integer) {
             return ((Integer) value).doubleValue();
