@@ -184,16 +184,12 @@ public class StatisticService {
      */
     public List<DateCategoryAmountDTO> getStatisticsByDates(Long accountBookId, Long memberId) {
         List<Object[]> results = expenseRepository.findTotalAmountByDates(accountBookId, memberId);
-        Map<String, Double> aggregatedResults = new TreeMap<>();
-
-        for (Object[] result : results) {
-            String date = ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER);
-            Double amount = convertToDouble(result[1]);
-            aggregatedResults.merge(date, amount, Double::sum);
-        }
-
-        return aggregatedResults.entrySet().stream()
-                .map(entry -> new DateCategoryAmountDTO(entry.getKey(), null, entry.getValue()))
+        return results.stream()
+                .map(result -> new DateCategoryAmountDTO(
+                        ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
+                        null,
+                        convertToDouble(result[1])
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -206,8 +202,8 @@ public class StatisticService {
         return results.stream()
                 .map(result -> new DateCategoryAmountDTO(
                         ((LocalDateTime) result[0]).format(DATE_TIME_FORMATTER),
-                        (Category) result[1], // 전체 아니라서 카테고리 설정
-                        convertToDouble(result[2]) // 지출 금액
+                        (Category) result[1],
+                        convertToDouble(result[2])
                 ))
                 .collect(Collectors.toList());
     }
@@ -219,7 +215,7 @@ public class StatisticService {
         } else if (value instanceof Double) {
             return (Double) value;
         } else {
-            throw new ClassCastException("Unexpected value type: " + value.getClass().getName());
+            throw new ClassCastException("int -> double 캐스팅 오류 : StatisticService : " + value.getClass().getName());
         }
     }
 }
