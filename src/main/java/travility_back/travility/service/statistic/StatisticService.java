@@ -139,7 +139,7 @@ public class StatisticService {
     /**
      * 날짜별로 지출 방법별 금액 가져오기
      */
-    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDateTime date) {
+    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, String date) {
         List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, date);
         return results.stream()
                 .map(result -> new PaymentMethodAmountDTO(

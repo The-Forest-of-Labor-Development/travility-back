@@ -61,8 +61,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.expenseDate = :date " +
             "GROUP BY e.paymentMethod")
-    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("date") LocalDateTime date);
-
+    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("date") String date);
 
     // 카테고리별 총 지출금액 조회
     @Query("select e.category, " +
