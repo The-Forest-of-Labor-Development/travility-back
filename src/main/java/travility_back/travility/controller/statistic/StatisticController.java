@@ -45,6 +45,7 @@ public class StatisticController {
      * 지출 통계
      */
 
+    // [Select 메뉴] 카테고리별 바 차트
     @GetMapping("/statistics/category")
     public ResponseEntity<List<DateCategoryAmountDTO>> getStatisticsByDate(@RequestParam Long accountBookId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -53,6 +54,7 @@ public class StatisticController {
         return ResponseEntity.ok(statistics);
     }
 
+    // [Select 메뉴] 결제방법별 바 차트
     @GetMapping("/statistics/paymentMethod")
     public ResponseEntity<List<PaymentMethodAmountDTO>> getPaymentMethodStatistics(
             @RequestParam Long accountBookId,
@@ -63,6 +65,7 @@ public class StatisticController {
         return ResponseEntity.ok(statistics);
     }
 
+    // 카테고리별 전체 지출
     @GetMapping("/statistics/totalcategory")
     public ResponseEntity<List<DateCategoryAmountDTO>> getTotalAmountByCategoryForAll(@RequestParam Long accountBookId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
