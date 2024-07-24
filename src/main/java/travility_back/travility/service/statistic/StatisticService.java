@@ -119,7 +119,7 @@ public class StatisticService {
             throw new UsernameNotFoundException(username); // 사용자 없으면
         }
     }
-    
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -139,7 +139,7 @@ public class StatisticService {
     /**
      * 날짜별로 지출 방법별 금액 가져오기
      */
-    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, String date) {
+    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDateTime date) {
         List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, date);
         return results.stream()
                 .map(result -> new PaymentMethodAmountDTO(

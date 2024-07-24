@@ -14,7 +14,6 @@ import travility_back.travility.service.statistic.StatisticService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,10 +56,9 @@ public class StatisticController {
     @GetMapping("/statistics/paymentMethod")
     public ResponseEntity<List<PaymentMethodAmountDTO>> getPaymentMethodStatistics(
             @RequestParam Long accountBookId,
-            @RequestParam String date) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long memberId = statisticService.getMemberIdByUsername(username);
-
         List<PaymentMethodAmountDTO> statistics = statisticService.getPaymentMethodStatistics(accountBookId, memberId, date);
         return ResponseEntity.ok(statistics);
     }

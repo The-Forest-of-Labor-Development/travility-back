@@ -49,7 +49,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     // 날짜별 카테고리 지출금액 조회
     @Query("select e.expenseDate, e.category, " +
-            "SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople) * b.exchangeRate) else floor(e.amount * b.exchangeRate) end) " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId " +
             "GROUP BY e.expenseDate, e.category")
@@ -57,15 +57,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     // 날짜별 결제방법별 지출금액 조회
     @Query("select e.paymentMethod, " +
-            "SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople) * b.exchangeRate) else floor(e.amount * b.exchangeRate) end) " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.expenseDate = :date " +
             "GROUP BY e.paymentMethod")
-    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("date") String date);
+    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("date") LocalDateTime date);
+
 
     // 카테고리별 총 지출금액 조회
     @Query("select e.category, " +
-            "SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople) * b.exchangeRate) else floor(e.amount * b.exchangeRate) end) " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId " +
             "GROUP BY e.category")
@@ -76,7 +77,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
 
     // 특정 가계부의 총 지출금액 조회
-    @Query("SELECT SUM(FLOOR(e.amount * b.exchangeRate)) " +
+    @Query("SELECT SUM(CASE WHEN e.isShared = true THEN FLOOR((e.amount / ab.numberOfPeople) * b.exchangeRate) ELSE e.amount * b.exchangeRate END) " +
             "FROM Expense e " +
             "JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId")
@@ -87,14 +88,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
 
     // 날짜별 총 지출금액 조회
-    @Query("select e.expenseDate, SUM(FLOOR(e.amount * b.exchangeRate)) " +
+    @Query("select e.expenseDate, SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople) * b.exchangeRate) else floor(e.amount * b.exchangeRate) end) " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId GROUP BY e.expenseDate")
     List<Object[]> findTotalAmountByDates(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId);
 
 
     // 특정 카테고리의 날짜별 지출금액 조회
-    @Query("select e.expenseDate, e.category, SUM(FLOOR(e.amount * b.exchangeRate)) " +
+    @Query("select e.expenseDate, e.category, SUM(case when e.isShared = true then floor((e.amount / ab.numberOfPeople) * b.exchangeRate) else floor(e.amount * b.exchangeRate) end) " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.category in :categories GROUP BY e.expenseDate, e.category")
     List<Object[]> findTotalAmountByDatesAndCategories(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("categories") List<Category> categories);
