@@ -32,7 +32,7 @@ public class CalcUtil {
         return currencyToAvgExchangeRate;
     }
 
-    //(공동 or 개인) 경비 합계
+    //원하는 경비 합계
     public static Double calculateTotalExpensesByCurrency(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
         double totalExpenses = 0.0;
         for (Expense expense : expenses) {
