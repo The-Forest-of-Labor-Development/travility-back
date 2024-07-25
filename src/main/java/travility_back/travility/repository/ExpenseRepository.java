@@ -73,6 +73,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     /**
      * 지출통계 : 예산 - 지출
+     * {@link BudgetRepository}에도 관련 코드 있음.
      */
 
     // 특정 가계부의 총 지출금액 조회
