@@ -10,6 +10,7 @@ import travility_back.travility.entity.enums.PaymentMethod;
 @AllArgsConstructor
 public class PaymentMethodAmountDTO {
 
+    private String date;
     private PaymentMethod paymentMethod;
-    private double amount;
+    private Double amount;
 }
