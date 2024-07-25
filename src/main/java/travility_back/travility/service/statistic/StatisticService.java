@@ -139,10 +139,11 @@ public class StatisticService {
     /**
      * 날짜별로 지출 방법별 금액 가져오기
      */
-    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDateTime date) {
-        List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, date);
+    public List<PaymentMethodAmountDTO> getPaymentMethodStatistics(Long accountBookId, Long memberId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        List<Object[]> results = expenseRepository.findTotalAmountByPaymentMethodAndDate(accountBookId, memberId, startOfDay, endOfDay);
         return results.stream()
                 .map(result -> new PaymentMethodAmountDTO(
+                        formatDate(startOfDay.toLocalDate()), // 날짜 포매팅 방법 변경
                         (PaymentMethod) result[0],
                         convertToDouble(result[1])
                 ))
@@ -217,5 +218,9 @@ public class StatisticService {
         } else {
             throw new ClassCastException("int -> double 캐스팅 오류 : StatisticService : " + value.getClass().getName());
         }
+    }
+
+    private String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 }
