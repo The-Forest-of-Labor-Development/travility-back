@@ -15,7 +15,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
 
     // 예산 - 지출
-    @Query("SELECT SUM(CASE WHEN b.isShared = true THEN FLOOR(b.amount / ab.numberOfPeople) ELSE b.amount END) " +
+    @Query("SELECT SUM(FLOOR(b.amount * b.exchangeRate)) " +
             "FROM Budget b " +
             "JOIN b.accountBook ab " +
             "WHERE ab.id = :accountBookId")
