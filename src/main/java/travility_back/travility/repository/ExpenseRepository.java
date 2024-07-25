@@ -19,13 +19,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
 
     // 카테고리별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
+    // 카테고리별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
     @Query("select e.category, FLOOR(SUM(case when e.isShared = true then (e.amount / ab.numberOfPeople) * b.exchangeRate else e.amount * b.exchangeRate end)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id WHERE ab.member.id = :memberId GROUP BY e.category")
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
+            "WHERE ab.member.id = :memberId GROUP BY e.category")
     List<Object[]> findTotalAmountByCategory(@Param("memberId") Long memberId);
 
     // 결제 방법별 지출 금액 (개인 지출 + 공유 지출 / 인원수)
     @Query("select e.paymentMethod, FLOOR(SUM(case when e.isShared = true then (e.amount / ab.numberOfPeople) * b.exchangeRate else e.amount * b.exchangeRate end)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
+            "WHERE ab.member.id = :memberId GROUP BY e.paymentMethod")
     List<Object[]> findTotalAmountByPaymentMethod(@Param("memberId") Long memberId);
 
     /**
@@ -49,37 +52,37 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     // 날짜별 카테고리 지출금액 조회
     @Query("select e.expenseDate, e.category, " +
-            "SUM(floor(e.amount * b.exchangeRate)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+            "SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId " +
             "GROUP BY e.expenseDate, e.category")
     List<Object[]> findTotalAmountByDateAndCategory(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId);
 
     // 날짜별 결제방법별 지출금액 조회
     @Query("select e.paymentMethod, " +
-            "SUM(floor(e.amount * b.exchangeRate)), e.expenseDate " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+            "SUM(FLOOR(e.amount * b.exchangeRate)), e.expenseDate " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.expenseDate BETWEEN :startOfDay AND :endOfDay " +
             "GROUP BY e.paymentMethod, e.expenseDate")
     List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
     // 카테고리별 총 지출금액 조회
     @Query("select e.category, " +
-            "SUM(floor(e.amount * b.exchangeRate)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+            "SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId " +
             "GROUP BY e.category")
     List<Object[]> findTotalAmountByCategoryForAll(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId);
 
     /**
      * 지출통계 : 예산 - 지출
-     * {@link BudgetRepository}에도 관련 코드 있음.
+     * {@link BudgetRepository} 관련 코드 있음.
      */
 
     // 특정 가계부의 총 지출금액 조회
     @Query("SELECT SUM(FLOOR(e.amount * b.exchangeRate)) " +
             "FROM Expense e " +
-            "JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+            "JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId")
     Double getTotalExpenseByAccountBookId(@Param("accountBookId") Long accountBookId);
 
@@ -88,15 +91,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
 
     // 날짜별 총 지출금액 조회
-    @Query("select e.expenseDate, SUM(floor(e.amount * b.exchangeRate)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+    @Query("select e.expenseDate, SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId GROUP BY e.expenseDate")
     List<Object[]> findTotalAmountByDates(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId);
 
 
     // 특정 카테고리의 날짜별 지출금액 조회
-    @Query("select e.expenseDate, e.category, SUM(floor(e.amount * b.exchangeRate)) " +
-            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
+    @Query("select e.expenseDate, e.category, SUM(FLOOR(e.amount * b.exchangeRate)) " +
+            "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id and e.curUnit = b.curUnit " +
             "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.category in :categories GROUP BY e.expenseDate, e.category")
     List<Object[]> findTotalAmountByDatesAndCategories(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("categories") List<Category> categories);
 
