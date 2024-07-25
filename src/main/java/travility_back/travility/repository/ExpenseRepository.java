@@ -57,11 +57,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     // 날짜별 결제방법별 지출금액 조회
     @Query("select e.paymentMethod, " +
-            "SUM(floor(e.amount * b.exchangeRate)) " +
+            "SUM(floor(e.amount * b.exchangeRate)), e.expenseDate " +
             "from Expense e JOIN e.accountBook ab JOIN Budget b ON b.accountBook.id = ab.id " +
-            "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.expenseDate = :date " +
-            "GROUP BY e.paymentMethod")
-    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("date") LocalDateTime date);
+            "WHERE ab.id = :accountBookId AND ab.member.id = :memberId AND e.expenseDate BETWEEN :startOfDay AND :endOfDay " +
+            "GROUP BY e.paymentMethod, e.expenseDate")
+    List<Object[]> findTotalAmountByPaymentMethodAndDate(@Param("accountBookId") Long accountBookId, @Param("memberId") Long memberId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
     // 카테고리별 총 지출금액 조회
     @Query("select e.category, " +
