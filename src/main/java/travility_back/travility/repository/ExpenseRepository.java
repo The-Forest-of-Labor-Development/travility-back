@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.enums.Category;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
