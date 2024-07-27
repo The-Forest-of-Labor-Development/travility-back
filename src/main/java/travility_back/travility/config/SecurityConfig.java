@@ -79,9 +79,13 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/","/api/auth/**","/api/login","/api/signup", "/api/settlement/**", "/api/users/forgot-password","/images/**").permitAll()
+                        .requestMatchers("/","/index.html", "/manifest.json", "/favicon.ico", "/asset-manifest.json","/js/**",  "/css/**", "/media/**", "/images/**").permitAll()
+//                        .requestMatchers("/login", "/loading", "/signup", "/forgot-password", "/settlement/**").permitAll()
+//                        .requestMatchers("/main","/dashboard/**", "/accountbook/**", "/admin/**").permitAll()
+                        .requestMatchers("/api/auth/**","/api/login","/api/signup", "/api/settlement/**", "/api/users/forgot-password","/uploaded-images/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );

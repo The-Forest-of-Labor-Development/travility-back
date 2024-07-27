@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -19,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); //타임스탬프 직렬화 disable
@@ -30,14 +31,32 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") //모든 경로에 대한 CORS 설정 추가 (백엔드의 모든 엔드포인트)
                 .allowedOrigins("http://localhost:3000") //이 URL에서 오는 요청 허용
-                .exposedHeaders("Authorization","Set-Cookie")
+                .exposedHeaders("Authorization", "Set-Cookie")
                 .allowCredentials(true)
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**") //이 도메인으로 요청되는 리소스는
-                .addResourceLocations(UploadInform.uploadLocation); //이 주소에 있는 리소스를 돌려줌 (file:/// : 파일 시스템의 최상위 디렉토리)
+        registry.addResourceHandler("/uploaded-images/**") //업로드된 리소스
+                .addResourceLocations(UploadInform.uploadLocation); //이 주소에 있는 리소스 반환 (file:/// : 파일 시스템의 최상위 디렉토리)
+        registry.addResourceHandler("/images/**") //정적 리소스
+                .addResourceLocations("classpath:/static/images/");
     }
+
+    //    @Override
+//    public void addViewControllers(ViewControllerRegistry registry) {
+//        // 모든 경로를 index.html로 리디렉션
+//        //registry.addViewController("/**/{path:[^\\.]*}").setViewName("forward:/index.html");
+//        registry.addViewController("/**").setViewName("forward:/index.html");
+//
+//    }
+
+//    @Override
+//    public void addViewControllers(ViewControllerRegistry registry) {
+//        // 클라이언트 사이드 라우팅을 위해 모든 경로를 index.html로 포워딩
+//        registry.addViewController("/{path:^(?!api$).*}/**")
+//                .setViewName("forward:/index.html");
+//    }
+
 }
