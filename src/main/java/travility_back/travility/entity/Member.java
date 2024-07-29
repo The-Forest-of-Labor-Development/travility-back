@@ -25,7 +25,6 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String username;
 
-    // 소셜로그인 받을 때 실명 나옴
     private String name;
 
     private String password;

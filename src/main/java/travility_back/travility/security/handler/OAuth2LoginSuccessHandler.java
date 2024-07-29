@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         // 토큰 전달방법 : 쿠키 전달
         response.addCookie(createCookie("refresh", refresh));
-        response.sendRedirect("http://localhost:3000/loading"); // 프론트단
+        response.sendRedirect("/loading"); // 프론트단
     }
 
     //Refresh 토큰 DB 저장
