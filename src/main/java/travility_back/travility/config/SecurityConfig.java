@@ -81,16 +81,15 @@ public class SecurityConfig {
 
 
         http
-                .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/","/index.html", "/manifest.json", "/favicon.ico", "/asset-manifest.json","/js/**",  "/css/**", "/media/**", "/images/**").permitAll()
-//                        .requestMatchers("/login", "/loading", "/signup", "/forgot-password", "/settlement/**").permitAll()
-//                        .requestMatchers("/main","/dashboard/**", "/accountbook/**", "/admin/**").permitAll()
-                        .requestMatchers("/api/auth/**","/api/login","/api/signup", "/api/settlement/**", "/api/users/forgot-password","/uploaded-images/**").permitAll()
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/", "/index.html", "/manifest.json", "/favicon.ico", "/asset-manifest.json", "/js/**", "/css/**", "/media/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/signup", "/main", "/dashboard/**", "/accountbook/**", "/settlement/**", "/admin/**", "/forgot-password", "/loading").permitAll()
+                        .requestMatchers( "/","/api/auth/**", "/api/login", "/api/signup", "/api/settlement/**", "/api/users/forgot-password", "/uploaded-images/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated() //나머지 경로는 로그인 후 접근 가능
                 );
 
-        http.exceptionHandling((exception)-> exception
+        http.exceptionHandling((exception) -> exception
                 .accessDeniedHandler(customAccessDeniedHandler));
 
         http
@@ -105,11 +104,12 @@ public class SecurityConfig {
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberRepository, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshTokenRepository), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
 
         // OAuth2 로그인 설정
         http
                 .oauth2Login((oauth2) -> oauth2
+                        .loginPage("/login")
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig // 뭔지모름
                                 .userService(customOAuth2UserService)) // 사용자 정보 가져오기
                         .successHandler(OAuth2LoginSuccessHandler) // 성공 후 실행

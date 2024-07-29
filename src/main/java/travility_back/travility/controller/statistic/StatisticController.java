@@ -3,16 +3,20 @@ package travility_back.travility.controller.statistic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import travility_back.travility.dto.auth.CustomUserDetails;
 import travility_back.travility.dto.statistics.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Category;
+import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.service.statistic.StatisticService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/accountbook")
@@ -20,6 +24,7 @@ import java.util.List;
 public class StatisticController {
 
     private final StatisticService statisticService;
+    private final MemberRepository memberRepository;
 
     /**
      * 마이 리포트
@@ -37,6 +42,33 @@ public class StatisticController {
         Member member = statisticService.getMemberByUsername(username);
         return ResponseEntity.ok(member);
     }
+
+    @GetMapping("/myreport")
+    public Map<String, Object> getMyReportData(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return statisticService.getMyReportData(userDetails.getUsername());
+    }
+
+//    @GetMapping("/expense-statistics")
+//    public Map<String, Object> getExpenseStatistics(@RequestParam Long accountBookId, @RequestParam String date){
+//        return statisticService.getDailyStatistics(accountBookId, date);
+//    }
+
+    //지출 통계
+    @GetMapping("/expenses/category")
+    public Map<String, Double> getExpenditureByCategory(@RequestParam Long accountBookId){
+        return statisticService.getExpenditureByCategory(accountBookId);
+    }
+
+    @GetMapping("/expenses/total")
+    public double getTotalExpenditure(@RequestParam Long accountBookId){
+        return statisticService.totalExpenditureByAccountBook(accountBookId);
+    }
+
+    @GetMapping("/expenses/budget")
+    public double getTotalBudget(@RequestParam Long accountBookId){
+        return statisticService.getTotalBudgetByAccountBook(accountBookId);
+    }
+
 
     /**
      * 지출 통계

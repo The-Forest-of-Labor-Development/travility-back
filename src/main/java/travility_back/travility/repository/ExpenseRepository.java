@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import travility_back.travility.entity.Expense;
 import travility_back.travility.entity.enums.Category;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -112,4 +113,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     //개인 경비 지출
     @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.isShared = false")
     List<Expense> findPersonalExpensesAccountBookId(@Param("accountBookId") Long accountBookId);
+
+    //해당 날짜 지출 목록
+    @Query("select e from Expense e where e.accountBook.id = :accountBookId and e.expenseDate = :expenseDate")
+    List<Expense> findExpensesByAccountBookIdAndDate(@Param("accountBookId") Long accountBookId, @Param("expenseDate") LocalDate expenseDate);
 }

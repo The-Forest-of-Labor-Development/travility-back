@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -43,20 +42,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**") //정적 리소스
                 .addResourceLocations("classpath:/static/images/");
     }
-
-    //    @Override
-//    public void addViewControllers(ViewControllerRegistry registry) {
-//        // 모든 경로를 index.html로 리디렉션
-//        //registry.addViewController("/**/{path:[^\\.]*}").setViewName("forward:/index.html");
-//        registry.addViewController("/**").setViewName("forward:/index.html");
-//
-//    }
-
-//    @Override
-//    public void addViewControllers(ViewControllerRegistry registry) {
-//        // 클라이언트 사이드 라우팅을 위해 모든 경로를 index.html로 포워딩
-//        registry.addViewController("/{path:^(?!api$).*}/**")
-//                .setViewName("forward:/index.html");
-//    }
 
 }
