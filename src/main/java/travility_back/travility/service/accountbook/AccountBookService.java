@@ -104,7 +104,7 @@ public class AccountBookService {
 
             //기존 이미지가 있을 경우
             if (accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()) {
-                FileUploadUtil.deleteImage(newImgName); //기존 이미지 삭제
+                FileUploadUtil.deleteImage(accountBook.getImgName()); //기존 이미지 삭제
             }
             accountBook.setImgName(newImgName);
         }
@@ -121,6 +121,20 @@ public class AccountBookService {
     //가계부 삭제
     @Transactional
     public void deleteAccountBook(Long id) {
+        AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
+
+        for (Expense expense : accountBook.getExpenses()){
+            //지출 이미지가 있다면
+            if(expense.getImgName() != null && !expense.getImgName().isEmpty()){
+                FileUploadUtil.deleteImage(expense.getImgName()); //기존 이미지 파일 삭제
+            }
+        }
+
+        //가계부 이미지가 있다면
+        if (accountBook.getImgName() != null && !accountBook.getImgName().isEmpty()) {
+            FileUploadUtil.deleteImage(accountBook.getImgName()); //기존 이미지 삭제
+        }
+
         accountBookRepository.deleteById(id);
     }
 

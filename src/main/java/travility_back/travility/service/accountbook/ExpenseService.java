@@ -72,7 +72,7 @@ public class ExpenseService {
 
             //기존 이미지가 있다면
             if(expense.getImgName() != null && !expense.getImgName().isEmpty()){
-                FileUploadUtil.deleteImage(newImgName); //기존 이미지 파일 삭제
+                FileUploadUtil.deleteImage(expense.getImgName()); //기존 이미지 파일 삭제
             }
             expense.setImgName(newImgName);
         }
@@ -91,6 +91,11 @@ public class ExpenseService {
     //지출 삭제
     @Transactional
     public void deleteExpense(Long id){
+        Expense expense = expenseRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Expense not found"));
+        //이미지가 있다면
+        if(expense.getImgName() != null && !expense.getImgName().isEmpty()){
+            FileUploadUtil.deleteImage(expense.getImgName()); //기존 이미지 파일 삭제
+        }
         expenseRepository.deleteById(id);
     }
 }
