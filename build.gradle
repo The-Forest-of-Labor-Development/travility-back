@@ -44,6 +44,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
 }
 
 tasks.named('test') {
@@ -92,3 +93,4 @@ task copyReactBuildFiles(type: Copy) {
 	into "$projectDir/src/main/resources/static"
 	onlyIf { !file("$projectDir/src/main/resources/static").exists()}
 	}
+
