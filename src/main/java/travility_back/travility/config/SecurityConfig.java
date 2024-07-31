@@ -82,7 +82,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/index.html", "/manifest.json", "/favicon.ico", "/asset-manifest.json","/images/**", "/static/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/manifest.json", "/favicon.ico", "/asset-manifest.json","/images/**", "/css/**","/js/**", "/media/**").permitAll()
                         .requestMatchers("/login", "/signup", "/main", "/dashboard/**", "/accountbook/**", "/settlement/**", "/admin/**", "/forgot-password", "/loading").permitAll()
                         .requestMatchers( "/api/auth/**", "/api/login", "/api/signup", "/api/settlement/**", "/api/users/forgot-password", "/uploaded-images/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
