@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
-import travility_back.travility.security.CustomLogoutFilter;
+import travility_back.travility.security.filter.CustomLogoutFilter;
 import travility_back.travility.security.handler.error.CustomAccessDeniedHandler;
 import travility_back.travility.security.handler.OAuth2LoginSuccessHandler;
 import travility_back.travility.security.filter.LoginFilter;

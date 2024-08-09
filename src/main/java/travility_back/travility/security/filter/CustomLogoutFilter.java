@@ -1,4 +1,4 @@
-package travility_back.travility.security;
+package travility_back.travility.security.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -13,7 +13,6 @@ import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class CustomLogoutFilter extends GenericFilterBean {
 

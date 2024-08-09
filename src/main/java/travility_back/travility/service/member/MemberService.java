@@ -18,7 +18,6 @@ import travility_back.travility.dto.member.MemberDTO;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
-import travility_back.travility.service.auth.AuthService;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,7 +27,6 @@ import java.util.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RestTemplate restTemplate;
 
@@ -148,12 +146,6 @@ public class MemberService {
         }
 
         request.getSession().invalidate(); //세션 무효화
-    }
-
-    // 객체 갖고오기
-    public Member getMemberByUsername(String username) {
-        Optional<Member> member = memberRepository.findByUsername(username);
-        return member.orElseThrow(() -> new IllegalArgumentException("다음의 이름을 찾을 수 없음. : " + username));
     }
 
 }
