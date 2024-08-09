@@ -17,7 +17,7 @@
   <br>
 
   ## 🔎 서비스 소개
-  ![서비스소개](https://github.com/user-attachments/assets/93b5df03-c8d5-41d7-95d8-1bf6f9d36ec2)
+  ![서비스소개](https://github.com/user-attachments/assets/ff1b42f2-6b80-4b04-8c38-a4d101f15a75)
   
   <br>
   <br>
