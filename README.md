@@ -1,8 +1,8 @@
 <div align="center">
 
-![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=TRAVILITY🐷&fontSize=90)
+![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=TRAVILITY&fontSize=90)
   
-  ## 🧳✏️ TRAVILITY 🐷<br>
+  ## <img src="https://github.com/user-attachments/assets/1ea329fa-9f9f-401d-96ab-cff1fa21376f" width="30px">  TRAVILITY  <img src="https://github.com/user-attachments/assets/1ea329fa-9f9f-401d-96ab-cff1fa21376f" width="30px"><br>
   Travility는 사용자가 여행 중 경비 관리를 손쉽게 관리할 수 있도록 도와주는 여행 가계부 웹 앱입니다. <br>
   여행 경비와 관련된 다양한 기능을 제공하여 사용자가 편리하게 여행을 즐길 수 있도록 지원합니다. <br>
 
@@ -81,7 +81,7 @@
 #### Sysyem Architecture
 ![System Architecture](https://github.com/user-attachments/assets/bf76378c-d94c-4928-a497-9142502037f4)
 #### Work Flow
-![workflow](https://github.com/user-attachments/assets/18d55564-b4ff-4a32-95c3-2a00e9d7deaf)
+![travility_UI_Diagram](https://github.com/user-attachments/assets/464682bc-e511-480f-a462-512e591af546)
 #### ERD (<a href="https://www.erdcloud.com/d/K3iPuuZy3FDYsmcwW" target="_blank">🔗자세히 보러가기</a>)
 ![ERD](https://github.com/user-attachments/assets/5598d432-3b44-4a35-aaf0-7a2c7679da30)
 #### Wire Frame (<a href="https://www.figma.com/design/tEJo1b5V0vTel2IvEKSxwx/Travility?node-id=0-1&t=taPt8JZKpz2HYkqH-0" target="_blank">🔗자세히 보러가기</a>)
