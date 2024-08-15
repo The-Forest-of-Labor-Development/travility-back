@@ -48,12 +48,4 @@ public class AdminController {
         memberService.deleteMember(new CustomUserDetails(new MemberDTO(member)));
     }
 
-    /*여행 및 지출 관리*/
-
-    //인기 여행지 Top5
-    @GetMapping("/travel/favorite-destinations")
-    public List<String> getTop5TravelDestinations() {
-        return adminService.getTop5TravelDestinations();
-    }
-
 }

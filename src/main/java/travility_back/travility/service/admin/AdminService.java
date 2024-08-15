@@ -51,10 +51,4 @@ public class AdminService {
 
     }
 
-    @Transactional
-    public List<String> getTop5TravelDestinations() {
-        Pageable pageable = PageRequest.of(0, 5); //첫 번째 페이지 5번째까지
-        return accountBookRepository.findTop5TravelDestination(pageable);
-    }
-
 }

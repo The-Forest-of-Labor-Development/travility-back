@@ -12,12 +12,4 @@ import java.util.List;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     void deleteByAccountBookId(Long accountBookId);
     List<Budget> findByAccountBookId(Long accountBookId);
-
-
-    // 예산 - 지출
-    @Query("SELECT SUM(FLOOR(b.amount * b.exchangeRate)) " +
-            "FROM Budget b " +
-            "JOIN b.accountBook ab " +
-            "WHERE ab.id = :accountBookId")
-    Double getTotalBudgetByAccountBookId(@Param("accountBookId") Long accountBookId);
 }
