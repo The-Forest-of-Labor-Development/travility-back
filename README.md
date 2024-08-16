@@ -10,8 +10,8 @@
   <br>
 
   ## ⭐ 서비스 이용 <br>
-  배포 주소 : http://118.67.135.21:8080 <br>
-  Test ID / PW : usertest1 / usertest1! <br>
+  배포 주소 : http://43.200.176.170:8080 <br>
+  Test ID / PW : testuser1 / testuser1! <br>
 
   <br>
   <br>
@@ -79,7 +79,7 @@
 
 ## 🛠️ 서비스 설계
 #### Sysyem Architecture
-![System Architecture](https://github.com/user-attachments/assets/bf76378c-d94c-4928-a497-9142502037f4)
+![시스템 아키텍처](https://github.com/user-attachments/assets/2aa62d15-6b24-456a-b20c-f17a5494f53f)
 #### Work Flow
 ![travility_UI_Diagram](https://github.com/user-attachments/assets/464682bc-e511-480f-a462-512e591af546)
 #### ERD (<a href="https://www.erdcloud.com/d/K3iPuuZy3FDYsmcwW" target="_blank">🔗자세히 보러가기</a>)
