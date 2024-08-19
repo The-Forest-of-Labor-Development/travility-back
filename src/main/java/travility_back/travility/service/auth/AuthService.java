@@ -13,8 +13,6 @@ import travility_back.travility.entity.RefreshToken;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
-
-import java.io.IOException;
 import java.util.NoSuchElementException;
 
 @Service
@@ -25,13 +23,17 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    //아이디 중복 확인
+    /**
+     * 아이디 중복 확인
+     */
     @Transactional
     public boolean duplicateUsername(String username) {
         return memberRepository.existsByUsername(username);
     }
 
-    //Access Token 재발급
+    /**
+     * Access Token 재발급
+     */
     @Transactional
     public ResponseEntity<?> reissueAccessToken(String refreshToken, HttpServletResponse response) {
         //Refresh Token이 없다면
@@ -82,14 +84,18 @@ public class AuthService {
     }
 
 
-    //Refresh 토큰 DB 저장
+    /**
+     * Refresh 토큰 DB 저장
+     */
     private void addRefreshToken(String username, String refresh, Long expiredMs) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("Member not found"));
         RefreshToken refreshToken = new RefreshToken(refresh, expiredMs.toString(), member);
         refreshTokenRepository.save(refreshToken);
     }
 
-    //Refresh Token 담을 쿠키 생성
+    /**
+     * Refresh Token 담을 쿠키 생성
+     */
     private Cookie createRefreshCookie(String key, String value, int expiredSeconds) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(expiredSeconds); //일주일

@@ -2,11 +2,8 @@ package travility_back.travility.service.member;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,10 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import travility_back.travility.dto.auth.CustomUserDetails;
 import travility_back.travility.entity.Member;
 import travility_back.travility.repository.MemberRepository;
-
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -33,8 +26,11 @@ public class PasswordService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    /**
+     * 비밀번호 찾기
+     */
     @Transactional
-    public void forgotPassword(String username, String email) throws MessagingException {
+    public void findPassword(String username, String email) throws MessagingException {
         Member member = memberRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("Member not found"));
 
         //소셜 로그인 사용자일 경우
@@ -52,7 +48,9 @@ public class PasswordService {
         sendTemporaryPasswordEmail(email, temporaryPassword); //이메일 전송
     }
 
-    //임시 비밀번호 생성
+    /**
+     * 임시 비밀번호 생성
+     */
     private String createTemporaryPassword(){
         String lowercase = "abcdefghijklnmopqrstuvwxyz"; //영소문자
         String numbers = "0123456789"; //숫자
@@ -73,7 +71,9 @@ public class PasswordService {
         return password.toString();
     }
 
-    //임시 비밀번호 이메일 전송
+    /**
+     * 임시 비밀번호 이메일 전송
+     */
     private void sendTemporaryPasswordEmail(String recipientEmail, String temporaryPassword) throws MessagingException {
 
         //이메일 객체 생성
@@ -112,20 +112,24 @@ public class PasswordService {
         javaMailSender.send(mimeMessage);
     }
 
-    //비밀번호 변경 전, 기존 비밀번호 확인
+    /**
+     * 비밀번호 변경 전, 기존 비밀번호 확인
+     */
     @Transactional(readOnly = true)
     public boolean confirmPassword(CustomUserDetails userDetails, String password) {
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Member not found"));
         return bCryptPasswordEncoder.matches(password, member.getPassword()); //사용자가 입력한 비밀번호와 db에 저장된 비밀번호가 같은 지
     }
 
-    //비밀번호 변경
+    /**
+     * 비밀번호 변경
+     */
     @Transactional
-    public void updatePassword(CustomUserDetails userDetails, String password){
+    public void updatePassword(CustomUserDetails userDetails, String newPassword){
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(()-> new UsernameNotFoundException("Member not found"));
-        if (bCryptPasswordEncoder.matches(password, member.getPassword())){ //기존 비밀번호와 일치할 경우
+        if (bCryptPasswordEncoder.matches(newPassword, member.getPassword())){ //기존 비밀번호와 일치할 경우
             throw new IllegalArgumentException("Current password matches");
         }
-        member.setPassword(bCryptPasswordEncoder.encode(password)); //비밀번호 변경
+        member.setPassword(bCryptPasswordEncoder.encode(newPassword)); //비밀번호 변경
     }
 }

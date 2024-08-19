@@ -8,7 +8,6 @@ import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Budget;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.BudgetRepository;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -20,7 +19,9 @@ public class BudgetService {
     private final BudgetRepository budgetRepository;
     private final AccountBookRepository accountBookRepository;
 
-    //예산 등록
+    /**
+     * 예산 등록
+     */
     @Transactional
     public List<BudgetDTO> updateBudgets(Long accountBookId, List<BudgetDTO> budgetDTOs) {
         AccountBook accountBook = accountBookRepository.findById(accountBookId)

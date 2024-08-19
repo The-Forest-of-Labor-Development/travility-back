@@ -19,7 +19,6 @@ import travility_back.travility.entity.RefreshToken;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -56,7 +55,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     }
 
-    //로그인 인증 성공 후 로직
+    /**
+     * 로그인 인증 성공 후 로직
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal(); //인증된 사용자 정보
@@ -86,7 +87,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    //로그인 인증 실패 후 로직
+    /**
+     * 로그인 인증 실패 후 로직
+     */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -95,13 +98,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setCharacterEncoding("UTF-8");
     }
 
-    //Refresh 토큰 DB 저장
+    /**
+     * Refresh 토큰 DB 저장
+     */
     private void addRefreshToken(String username, String refresh, Long expiredMs) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()-> new NoSuchElementException("Member not found"));
         RefreshToken refreshToken = new RefreshToken(refresh,expiredMs.toString(),member);
         refreshTokenRepository.save(refreshToken);
     }
 
+    /**
+     * 쿠키 생성
+     */
     private Cookie createCookie(String key, String value){
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(604800); //일주일. 초단위

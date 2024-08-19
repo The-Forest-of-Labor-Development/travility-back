@@ -9,14 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import travility_back.travility.dto.auth.CustomUserDetails;
 import travility_back.travility.dto.member.MemberDTO;
-
 import travility_back.travility.entity.enums.Role;
-
 import java.io.IOException;
-
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {

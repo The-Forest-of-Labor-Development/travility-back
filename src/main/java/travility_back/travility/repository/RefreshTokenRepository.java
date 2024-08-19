@@ -5,8 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import travility_back.travility.entity.RefreshToken;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Boolean existsByRefresh(String refresh); //Refresh Token 존재 여부
+    /**
+     * Refresh Token 존재 여부
+     */
+    Boolean existsByRefresh(String refresh);
 
+    /**
+     * Refresh Token 삭제
+     */
     @Transactional
-    void deleteByRefresh(String refresh); //Refresh Token 삭제
+    void deleteByRefresh(String refresh);
 }

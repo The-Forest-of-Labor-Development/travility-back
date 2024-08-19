@@ -9,13 +9,11 @@ import travility_back.travility.dto.accountbook.ExpenseDTO;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Budget;
 import travility_back.travility.entity.Expense;
-import travility_back.travility.entity.Member;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.util.CalcUtil;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,22 +30,22 @@ public class CalendarService {
     private final BudgetRepository budgetRepository;
 
     /**
-     * <p>{@code getMemberByUsername()} username으로 memberId 조회</p>
-     * <p>{@code getAccountBooksByMemberId()} 일정(event)를 조회하기 위해 memberId로 모든 일정 데이터 조회</p>
-     * <p>{@code getAccountBooksEventsByUsername} 일정(event) 생성 및 동일한 일정 반복출력 제거</p>
+     * username으로 id찾기
      */
-
-    // username으로 id찾기
     public Long getMemberIdByUsername(String username) {
         return memberRepository.findByUsername(username).map((member) -> member.getId()).orElseThrow(() -> new UsernameNotFoundException("Member not found"));
     }
 
-    // 사용자 id로 그 사용자의 모든 account_book 조회
+    /**
+     * 사용자 id로 그 사용자의 모든 account_book 조회
+     */
     public List<AccountBook> getAccountBooksByMemberId(Long memberId) {
         return accountBookRepository.findByMemberId(memberId);
     }
 
-    // username으로 일정(event) 가져오기
+    /**
+     * username으로 일정(event) 가져오기
+     */
     public List<Map<String, Object>> getAccountBooksEventsByUsername(String username) {
         Long memberId = getMemberIdByUsername(username);
         List<AccountBook> accountBooks = getAccountBooksByMemberId(memberId);
@@ -75,7 +73,9 @@ public class CalendarService {
         return new ArrayList<>(uniqueEvents.values());
     }
 
-
+    /**
+     * 날짜별 지출 목록
+     */
     public Map<LocalDate, Double> getExpenseByDay(Long id) {
         //id로 가계부 찾기
         logger.debug("Getting expenses by day for accountBookId: {}", id);
@@ -100,12 +100,16 @@ public class CalendarService {
         return map;
     }
 
-    // accountbookId 로 모든 expense 가져오기
+    /**
+     * accountbookId 로 모든 expense 가져오기
+     */
     public List<Expense> getAllExpensesByAccountbookId(Long accountbookId) {
         return expenseRepository.findByAccountBookId(accountbookId);
     }
 
-    //지출액 총합 계산(가중 평균)
+    /**
+     * 지출액 총합 계산(가중 평균)
+     */
     public Map<String, Object> calculateTotalExpenses(Long id) {
         List<Budget> budgets = budgetRepository.findByAccountBookId(id); //가계부 예산
         List<Expense> expenses = expenseRepository.findByAccountBookId(id); //가계부 지출

@@ -10,7 +10,6 @@ import travility_back.travility.dto.member.MemberDTO;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.MemberRepository;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,13 +22,17 @@ public class AdminService {
     private final MemberRepository memberRepository;
     private final AccountBookRepository accountBookRepository;
 
-    //총 회원수
+    /**
+     * 총 회원 수
+     */
     @Transactional(readOnly = true)
     public long getTotalMembersCount() {
         return memberRepository.countByRole(Role.ROLE_USER);
     }
 
-    //오늘 신규 가입자 수
+    /**
+     * 신규 가입자 수
+     */
     @Transactional(readOnly = true)
     public long getNewMembersCountToday(){
         LocalDate now = LocalDate.now(); //현재 날짜
@@ -38,7 +41,9 @@ public class AdminService {
         return memberRepository.countNewMembersToday(startDate, endDate, Role.ROLE_USER);
     }
 
-    //회원 페이징 처리
+    /**
+     * 회원리스트 페이징 처리
+     */
     @Transactional
     public List<MemberDTO> pagingMemberList(int page, int size, String sort){
         Sort.Direction direction = sort.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;

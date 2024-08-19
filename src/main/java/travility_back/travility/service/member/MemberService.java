@@ -18,7 +18,6 @@ import travility_back.travility.dto.member.MemberDTO;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,7 +35,9 @@ public class MemberService {
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
-    //회원가입
+    /**
+     * 회원가입
+     */
     @Transactional
     public void signup(MemberDTO memberDTO) {
         if (memberRepository.existsByUsername(memberDTO.getUsername())) { //중복 확인
@@ -48,7 +49,9 @@ public class MemberService {
         memberRepository.save(new Member(memberDTO));
     }
 
-    //회원 정보
+    /**
+     * 회원 정보 조회
+     */
     @Transactional(readOnly = true)
     public Map<String, String> getMemberInfo(CustomUserDetails userDetails) {
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Member not found"));
@@ -64,6 +67,9 @@ public class MemberService {
         return memberInfo;
     }
 
+    /**
+     * 회원 탈퇴
+     */
     @Transactional
     public void deleteMember(CustomUserDetails userDetails){
         Member member = memberRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Member not found"));
@@ -88,12 +94,16 @@ public class MemberService {
         }
     }
 
-    //일반 회원 탈퇴
+    /**
+     * 일반 회원 탈퇴
+     */
     private void deleteStandardAccount(Long memberId) {
         memberRepository.deleteById(memberId);
     }
 
-    //네이버 회원 탈퇴
+    /**
+     * 네이버 회원 탈퇴
+     */
     private void deleteNaverAccount(Long memberId, String oauth2Token) {
         String requestUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete" +
                 "&client_id=" + naverClientId +
@@ -104,14 +114,18 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    //구글 회원 탈퇴
+    /**
+     * 구글 회원 탈퇴
+     */
     private void deleteGoogleAccount(Long memberId, String oauth2Token) {
         String requestUrl = "https://accounts.google.com/o/oauth2/revoke?token=" + oauth2Token;
         sendRevokeRequest(requestUrl, HttpMethod.GET, null);
         memberRepository.deleteById(memberId);
     }
 
-    //카카오 회원 탈퇴
+    /**
+     * 카카오 회원 탈퇴
+     */
     private void deleteKakaoAccount(Long memberId, String oauth2Token) { //카카오만 헤더에 액세스 토큰 담아서 전달
         String requestUrl = "https://kapi.kakao.com/v1/user/unlink";
         HttpHeaders headers = new HttpHeaders();
@@ -120,7 +134,9 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    //서비스 제공자에 회원 탈퇴 요청
+    /**
+     * 서비스 제공자에 회원 탈퇴 요청
+     */
     private void sendRevokeRequest(String requestUrl, HttpMethod method, HttpHeaders headers) {
         ResponseEntity<String> response;
         if (headers != null) {
@@ -134,7 +150,9 @@ public class MemberService {
         }
     }
 
-    //회원 탈퇴용 로그아웃
+    /**
+     * 회원 탈퇴용 로그아웃
+     */
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
@@ -142,6 +160,9 @@ public class MemberService {
                 cookie.setPath("/"); //모든 경로에서 삭제
                 cookie.setMaxAge(0); //유효 기간 0
                 response.addCookie(cookie);
+            }
+            else {
+                throw new IllegalArgumentException("already logged out");
             }
         }
 

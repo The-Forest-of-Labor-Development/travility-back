@@ -19,7 +19,9 @@ public class AuthController {
     private final AuthService authService;
     private final JWTUtil jwtUtil;
 
-    //아이디 중복 확인
+    /**
+     * 아이디 중복 확인
+     */
     @GetMapping("/duplicate-username")
     public boolean duplicateUsername(@RequestParam String username) {
         boolean isDuplicate = authService.duplicateUsername(username); //중복 여부
@@ -29,7 +31,9 @@ public class AuthController {
         return false;
     }
 
-    //쿠키 JWT -> 헤더 JWT
+    /**
+     * 쿠키 JWT -> 헤더 JWT
+     */
     @GetMapping("/social-jwt")
     public void setAccessTokenFromRefreshToken(@CookieValue("refresh") String refreshToken, HttpServletResponse response) {
         if(refreshToken == null || refreshToken.isEmpty() || jwtUtil.isExpired(refreshToken)) {
@@ -46,7 +50,9 @@ public class AuthController {
         response.addHeader("Authorization", "Bearer " + accessToken);
     }
 
-    //Access Token 재발급
+    /**
+     * Access Token 재발급
+     */
     @PostMapping("/reissue")
     public ResponseEntity<?> reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;
@@ -60,7 +66,9 @@ public class AuthController {
         return authService.reissueAccessToken(refreshToken, response);
     }
 
-    //토큰 만료 여부
+    /**
+     * 토큰 만료 여부
+     */
     @GetMapping("/check-token")
     public boolean checkToken() { //토큰이 만료되었으면 jwt 필터에서 걸린다.
         return true;

@@ -13,11 +13,9 @@ import travility_back.travility.dto.auth.oauth2.response.*;
 import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 import travility_back.travility.repository.MemberRepository;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-// 사용자 정보 가져와서 db에 저장 / 갱신
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {

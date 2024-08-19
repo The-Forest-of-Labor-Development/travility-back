@@ -25,45 +25,58 @@ public class StatisticController {
 
     private final StatisticService statisticService;
 
-    //마이 리포트
+    /**
+     * 마이 리포트
+     */
     @GetMapping("/myreport")
     public Map<String, Object> getMyReportData(@AuthenticationPrincipal CustomUserDetails userDetails){
         return statisticService.getMyReportData(userDetails.getUsername());
     }
 
 
-    //가계부별 지출 통계
-    //총 누적 지출
+    /**
+     * 총 누적 지출
+     */
     @GetMapping("/total")
     public double getTotalExpenditure(@RequestParam Long accountBookId){
         return statisticService.getTotalExpenditureByAccountBook(accountBookId);
     }
 
-    //총 예산
+    /**
+     * 총 예산
+     */
     @GetMapping("/total/budget")
     public double getTotalBudget(@RequestParam Long accountBookId){
         return statisticService.getTotalBudgetByAccountBook(accountBookId);
     }
 
-    //가계부 카테고리별 총 지출
+    /**
+     * 가계부 카테고리별 총 지출
+     */
     @GetMapping("/total/category")
     public Map<String, Double> getExpenditureByCategory(@RequestParam Long accountBookId){
         return statisticService.getTotalExpenditureByAccountBookAndCategory(accountBookId);
     }
 
-    //일자별 통계(카테고리)
+    /**
+     * 일자별 통계(카테고리)
+     */
     @GetMapping("/daily/category")
     public List<DateCategoryAmountDTO> getDailyCategoryExpense(@RequestParam Long accountBookId){
         return statisticService.getDailyCategoryExpense(accountBookId);
     }
 
-    //일자별 통계(결제 방법)
+    /**
+     * 일자별 통계(결제 방법)
+     */
     @GetMapping("/daily/paymentmethod")
     public List<PaymentMethodAmountDTO> getDailyPaymentMethodExpense(@RequestParam Long accountBookId, @RequestParam String date){
         return statisticService.getDailyPaymentMethodExpense(accountBookId, date);
     }
 
-    //라인 차트(카테고리)
+    /**
+     * 라인 차트(카테고리)
+     */
     @GetMapping("/daily/line-chart")
     public List<DateCategoryAmountDTO> getDailyCategoryExpenseForLineChart(@RequestParam Long accountBookId, @RequestParam String category){
         return statisticService.getDailyCategoryExpenseForLineChart(accountBookId, category);

@@ -22,7 +22,6 @@ import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.util.CalcUtil;
 import travility_back.travility.util.FileUploadUtil;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +35,9 @@ public class AccountBookService {
     private final ExpenseRepository expenseRepository;
     private final ObjectMapper objectMapper;
 
-    //가계부 전체 조회
+    /**
+     * 가계부 전체 조회
+     */
     @Transactional(readOnly = true)
     public List<AccountBookDTO> getAllAccountBooks(String username, String sort) {
         //회원 찾기
@@ -68,14 +69,18 @@ public class AccountBookService {
                 .collect(Collectors.toList());
     }
 
-    //가계부 조회
+    /**
+     * 가계부 조회
+     */
     @Transactional(readOnly = true)
     public AccountBookDTO getAccountBookById(Long id) {
         AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("AccountBook not found"));
         return new AccountBookDTO(accountBook);
     }
 
-    //가계부 등록
+    /**
+     * 가계부 등록
+     */
     @Transactional
     public AccountBookDTO createAccountBook(AccountBookDTO accountBookDTO, String username) {
         AccountBook accountBook = new AccountBook(accountBookDTO);
@@ -85,7 +90,9 @@ public class AccountBookService {
         return new AccountBookDTO(accountBook);
     }
 
-    //가계부 수정
+    /**
+     * 가계부 수정
+     */
     @Transactional
     public void updateAccountBook(Long id, String tripInfo, MultipartFile img) throws IOException {
         //tripInfo -> AccountBookDTO로 변환
@@ -118,7 +125,9 @@ public class AccountBookService {
         accountBook.setEndDate(accountBookDTO.getEndDate());
     }
 
-    //가계부 삭제
+    /**
+     * 가계부 삭제
+     */
     @Transactional
     public void deleteAccountBook(Long id) {
         AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
@@ -138,7 +147,9 @@ public class AccountBookService {
         accountBookRepository.deleteById(id);
     }
 
-    //가계부 엑셀화 내보내기
+    /**
+     * 가계부 내보내기 (엑셀화)
+     */
     @Transactional
     public ResponseEntity<?> exportAccountBookToExcel(Long id, boolean krw) {
         try {
@@ -190,7 +201,9 @@ public class AccountBookService {
         }
     }
 
-    //셀 스타일 설정 (제목 행)
+    /**
+     * 셀 스타일 설정 (제목행)
+     */
     private CellStyle createTitleCellStyle(Workbook workbook) {
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -208,7 +221,9 @@ public class AccountBookService {
         return titleStyle;
     }
 
-    //셀 스타일 설정(헤더 행)
+    /**
+     * 셀 스타일 설정 (헤더행)
+     */
     private CellStyle createHeaderCellStyle(Workbook workbook) {
         CellStyle headerStyle = workbook.createCellStyle();
         headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //배경 회색
@@ -219,7 +234,9 @@ public class AccountBookService {
         return headerStyle;
     }
 
-    //가계부 정보 엑셀 작성
+    /**
+     * 가계부 정보 엑셀 작성
+     */
     private int writeAccountBookInfo(int rowNum, Sheet sheet, CellStyle titleStyle, CellStyle headerStyle, AccountBook accountBook) {
         //가계부 정보 제목 행 생성
         Row titleRow = sheet.createRow(rowNum);
@@ -255,7 +272,9 @@ public class AccountBookService {
         return rowNum;
     }
 
-    //지출 목록 엑셀 작성
+    /**
+     * 지출 목록 엑셀 작성
+     */
     private int writeExpenseList(int rowNum, Sheet sheet, CellStyle titleStyle, CellStyle headerStyle, List<Expense> expenses, boolean krw, Map<String, Double> currencyToAvgExchangeRate) {
         //지출 목록 제목 행 생성
         rowNum += 3;
@@ -295,6 +314,9 @@ public class AccountBookService {
         return rowNum;
     }
 
+    /**
+     * 지출 통계 엑셀 작성
+     */
     private void writeExpenseStatistics(int rowNum, Sheet sheet, CellStyle titleStyle, CellStyle headerStyle, List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate, AccountBook accountBook) {
         //지출 통계 제목 행 생성
         rowNum += 2;
@@ -391,7 +413,9 @@ public class AccountBookService {
 
     }
 
-    //카테고리별 지출 초기화
+    /**
+     * 카테고리별 지출 초기화
+     */
     private Map<String, Double> initializeCategoryToTotalAmount() {
         Map<String, Double> categoryToTotalAmount = new HashMap<>();
         for (Category category : Category.values()) {

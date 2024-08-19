@@ -1,8 +1,6 @@
 package travility_back.travility.service.statistic;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import travility_back.travility.dto.statistics.*;
@@ -13,16 +11,12 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Category;
 import travility_back.travility.entity.enums.PaymentMethod;
 import travility_back.travility.repository.AccountBookRepository;
-import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.util.CalcUtil;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +26,11 @@ public class StatisticService {
     private final MemberRepository memberRepository;
     private final AccountBookRepository accountBookRepository;
 
-    //마이 리포트
-    //카테고리별 지출 초기화
+    /** 마이 리포트 */
+
+    /**
+     * 카테고리별 지출 초기화
+     */
     private Map<String, Double> initializeCategoryToTotalAmount() {
         Map<String, Double> categoryToTotalAmount = new HashMap<>();
         for (Category category : Category.values()) {
@@ -42,7 +39,9 @@ public class StatisticService {
         return categoryToTotalAmount;
     }
 
-    //결제방법별 지출 초기화
+    /**
+     * 결제방법별 지출 초기화
+     */
     private Map<String, Double> initializePaymentMethodToTotalAmount() {
         Map<String, Double> paymentMethodToTotalAmount = new HashMap<>();
         for (PaymentMethod paymentMethod : PaymentMethod.values()) {
@@ -51,7 +50,9 @@ public class StatisticService {
         return paymentMethodToTotalAmount;
     }
 
-    //카테고리별 지출
+    /**
+     * 카테고리별 지출
+     */
     public Map<String, Double> calculateExpenseByCategory(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
         Map<String, Double> categoryToTotalAmount = initializeCategoryToTotalAmount();
         for (Expense expense : expenses) {
@@ -63,7 +64,9 @@ public class StatisticService {
         return categoryToTotalAmount;
     }
 
-    //결제방법별 지출
+    /**
+     * 결제방법별 지출
+     */
     public Map<String, Double> calculateExpenseByPaymentMethod(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
         Map<String, Double> paymentMethodToTotalAmount = initializePaymentMethodToTotalAmount();
         for (Expense expense : expenses){
@@ -75,7 +78,9 @@ public class StatisticService {
         return paymentMethodToTotalAmount;
     }
 
-    //마이 리포트 데이터
+    /**
+     * 마이 리포트 데이터
+     */
     public Map<String, Object> getMyReportData(String username){
         //회원 찾기
         Member member = memberRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("Member Not found"));
@@ -119,16 +124,19 @@ public class StatisticService {
     }
 
 
+    /**지출 통계*/
 
-    //지출 통계
-
-    //총 지출
+    /**
+     * 총 지출
+     */
     public double getTotalExpenditureByAccountBook(Long accountBookId){
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
         return CalcUtil.calculateTotalExpenses(accountBook);
     }
 
-    //총 예산
+    /**
+     * 총 예산
+     */
     public double getTotalBudgetByAccountBook(Long accountBookId) {
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
         Map<String, Double> currencyToAvgExchangeRate = CalcUtil.calculateWeightedAverageExchangeRateByCurrency(accountBook.getBudgets()); //통화 코드 별 가중 평균 환율
@@ -143,7 +151,9 @@ public class StatisticService {
         return  totalBudget;
     }
 
-    //총 카테고리별 지출
+    /**
+     * 총 카테고리별 지출
+     */
     public Map<String, Double> getTotalExpenditureByAccountBookAndCategory(Long accountBookId){
         //가계부 찾기
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
@@ -156,7 +166,9 @@ public class StatisticService {
     }
 
 
-    //일자별 통계 (지출 항목)
+    /**
+     * 일자별 통계 (지출 항목)
+     */
     public List<DateCategoryAmountDTO> getDailyCategoryExpense(Long accountBookId){
         //가계부 찾기
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
@@ -183,7 +195,9 @@ public class StatisticService {
 
     }
 
-    //일자별 통계(결제 방법)
+    /**
+     * 일자별 통계(결제 방법)
+     */
     public List<PaymentMethodAmountDTO> getDailyPaymentMethodExpense(Long accountBookId, String date){
         //가계부 찾기
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));
@@ -233,7 +247,9 @@ public class StatisticService {
         return paymentMethodAmountDTOs;
     }
 
-    //라인 차트 (카테고리)
+    /**
+     * 라인 차트 (카테고리)
+     */
     public List<DateCategoryAmountDTO> getDailyCategoryExpenseForLineChart(Long accountBookId, String category){
         //가계부 찾기
         AccountBook accountBook = accountBookRepository.findById(accountBookId).orElseThrow(()-> new NoSuchElementException("AccountBook not found"));

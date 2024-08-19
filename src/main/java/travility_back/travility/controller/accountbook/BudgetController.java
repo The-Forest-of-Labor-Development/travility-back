@@ -14,7 +14,9 @@ public class BudgetController {
 
     private final BudgetService budgetService;
 
-    //예산 수정
+    /**
+     * 예산 수정
+     */
     @PutMapping("/{id}/budget")
     public List<BudgetDTO> updateBudget(@PathVariable Long id, @RequestBody List<BudgetDTO> budgets) {
         return budgetService.updateBudgets(id,budgets);

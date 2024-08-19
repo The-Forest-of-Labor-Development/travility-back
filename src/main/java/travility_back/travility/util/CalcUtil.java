@@ -3,14 +3,15 @@ package travility_back.travility.util;
 import travility_back.travility.entity.AccountBook;
 import travility_back.travility.entity.Budget;
 import travility_back.travility.entity.Expense;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CalcUtil {
 
-    //예산의 통화 코드별 가중 평균 환율
+    /**
+     * 예산의 통화 코드별 가중 평균 환율
+     */
     public static Map<String, Double> calculateWeightedAverageExchangeRateByCurrency(List<Budget> budgets) {
         Map<String, Double> currencyToAvgExchangeRate = new HashMap<>(); //통화 코드별 가중 평균 환율
         Map<String, Double> currencyToTotalAmount = new HashMap<>(); //통화 코드별 총 예산 금액
@@ -32,7 +33,9 @@ public class CalcUtil {
         return currencyToAvgExchangeRate;
     }
 
-    //원하는 경비 합계
+    /**
+     * 원하는 경비 합계
+     */
     public static Double calculateTotalExpensesByCurrency(List<Expense> expenses, Map<String, Double> currencyToAvgExchangeRate) {
         double totalExpenses = 0.0;
         for (Expense expense : expenses) {
@@ -45,7 +48,9 @@ public class CalcUtil {
         return totalExpenses;
     }
 
-    //가계부별 지출 총합
+    /**
+     * 가계부별 지출 총합
+     */
     public static Double calculateTotalExpenses(AccountBook accountBook) {
         Map<String, Double> currencyToAvgExchangeRate = calculateWeightedAverageExchangeRateByCurrency(accountBook.getBudgets()); //통화 코드별 가중 평균 환율
 

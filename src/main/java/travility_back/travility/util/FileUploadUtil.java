@@ -1,8 +1,7 @@
 package travility_back.travility.util;
 
-import org.springframework.web.multipart.MultipartFile;
 import travility_back.travility.config.UploadInform;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -11,7 +10,9 @@ public class FileUploadUtil {
 
     private static String path = UploadInform.uploadPath;
 
-    //이미지 업로드
+    /**
+     * 이미지 업로드
+     */
     public static String uploadImage(MultipartFile img) throws IOException {
         if (img == null || img.isEmpty()){
             throw new IllegalArgumentException("File cannot be null or empty");
@@ -26,7 +27,9 @@ public class FileUploadUtil {
         return newImgName;
     }
 
-    //이미지 삭제
+    /**
+     * 이미지 삭제
+     */
     public static void deleteImage(String imgName){
         File oldImg = new File(path, imgName);
         if (oldImg.exists()) {

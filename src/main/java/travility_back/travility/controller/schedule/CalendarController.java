@@ -25,6 +25,9 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
+    /**
+     * 회원별 가계부 목록
+     */
     @GetMapping("/schedule")
     public ResponseEntity<List<Map <String, Object>>> getAccountBooksByMember(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String username = userDetails.getUsername();
@@ -32,14 +35,18 @@ public class CalendarController {
         return ResponseEntity.ok(events);
     }
 
-
+    /**
+     * 날짜별 지출 목록
+     */
     @GetMapping("/schedule/{id}")
     public ResponseEntity<Map<LocalDate, Double>> getExpenseByDay(@PathVariable("id") Long id) {
         Map<LocalDate, Double> expenses = calendarService.getExpenseByDay(id);
         return ResponseEntity.ok(expenses);
     }
 
-    //accountbookId의 모든 지출 dto로 반환
+    /**
+     * 가계부 지출 목록
+     */
     @GetMapping("/expenses/{accountbookId}")
     public ResponseEntity<List<ExpenseDTO>> getAllExpensesByAccountbookId(@PathVariable("accountbookId") Long accountbookId) {
         List<Expense> expenses = calendarService.getAllExpensesByAccountbookId(accountbookId);
@@ -49,6 +56,9 @@ public class CalendarController {
         return ResponseEntity.ok(expenseDTOs);
     }
 
+    /**
+     * 날짜별 총 지출
+     */
     @GetMapping("/{id}/totalExpenses")
     public ResponseEntity<Map<String, Object>> getTotalExpenses(@PathVariable("id") Long id) {
         Map<String, Object> result = calendarService.calculateTotalExpenses(id);

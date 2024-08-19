@@ -11,7 +11,6 @@ import travility_back.travility.entity.Expense;
 import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.util.FileUploadUtil;
-
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
@@ -23,7 +22,9 @@ public class ExpenseService {
     private final AccountBookRepository accountBookRepository;
     private final ObjectMapper objectMapper;
 
-    //지출 등록
+    /**
+     * 지출 등록
+     */
     @Transactional
     public ExpenseDTO createExpense(String expenseInfo, MultipartFile img) throws IOException {
         ExpenseDTO expenseDTO = null;
@@ -53,7 +54,9 @@ public class ExpenseService {
         return expenseDTO;
     }
 
-    //지출 수정
+    /**
+     * 지출 수정
+     */
     @Transactional
     public void updateExpense(Long id, String expenseInfo, MultipartFile img) throws IOException {
         //수정할 지출 찾기
@@ -88,7 +91,9 @@ public class ExpenseService {
         expense.setMemo(expenseDTO.getMemo());
     }
 
-    //지출 삭제
+    /**
+     * 지출 삭제
+     */
     @Transactional
     public void deleteExpense(Long id){
         Expense expense = expenseRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Expense not found"));

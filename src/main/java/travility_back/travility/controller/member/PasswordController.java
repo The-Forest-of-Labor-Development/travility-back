@@ -25,8 +25,8 @@ public class PasswordController {
 
     //비밀번호 찾기
     @PostMapping("/forgot-password")
-    public void forgotPassword(@RequestBody MemberDTO memberDTO) throws MessagingException {
-        passwordService.forgotPassword(memberDTO.getUsername(), memberDTO.getEmail());
+    public void findPassword(@RequestBody MemberDTO memberDTO) throws MessagingException {
+        passwordService.findPassword(memberDTO.getUsername(), memberDTO.getEmail());
     }
 
     //기존 비밀번호 확인

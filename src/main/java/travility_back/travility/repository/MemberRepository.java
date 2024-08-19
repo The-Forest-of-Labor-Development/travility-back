@@ -9,19 +9,32 @@ import travility_back.travility.entity.Member;
 import travility_back.travility.entity.enums.Role;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    boolean existsByUsername(String username); //username 존재 여부
+    /**
+     * username 존재 여부
+     */
+    boolean existsByUsername(String username);
 
-    Optional<Member> findByUsername(String username); //username 회원 가져오기
+    /**
+     * 회원 조회
+     */
+    Optional<Member> findByUsername(String username);
 
-    long countByRole(Role role); //총 회원수
+    /**
+     * 총 회원 수 조회
+     */
+    long countByRole(Role role);
 
+    /**
+     * 신규 가입자 수 조회
+     */
     @Query("select count(*) from Member m where m.createdDate >= :startDate and m.createdDate <= :endDate and m.role = :role")
     long countNewMembersToday(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("role") Role role); //오늘 날짜 신규 가입자 수
 
-    Page<Member> findAllByRole(Role role, Pageable pageable); //페이징 정렬 회원 리스트
+    /**
+     * 회원 리스트 페이징 정렬 조회
+     */
+    Page<Member> findAllByRole(Role role, Pageable pageable);
 }

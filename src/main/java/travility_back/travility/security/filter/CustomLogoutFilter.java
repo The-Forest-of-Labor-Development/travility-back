@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.GenericFilterBean;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
-
 import java.io.IOException;
 
 public class CustomLogoutFilter extends GenericFilterBean {

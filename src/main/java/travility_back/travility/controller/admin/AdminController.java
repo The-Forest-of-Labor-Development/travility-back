@@ -21,27 +21,33 @@ public class AdminController {
     private final MemberRepository memberRepository;
     private final MemberService memberService;
 
-    /*사용자 관리*/
-
-    //전체 회원 수
+    /**
+     * 전체 회원 수
+     */
     @GetMapping("/users/total-count")
     public long getTotalMembersCount() {
         return adminService.getTotalMembersCount();
     }
 
-    //신규 가입자 수
+    /**
+     * 신규 가입자 수
+     */
     @GetMapping("/users/new-today")
     public long getNewMembersCountToday() {
         return adminService.getNewMembersCountToday();
     }
 
-    //회원 리스트 정렬, 페이징 처리
+    /**
+     * 회원 리스트 정렬, 페이징 처리
+     */
     @GetMapping("/users")
     public List<MemberDTO> pagingMemberList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "desc") String sort) {
         return adminService.pagingMemberList(page, size, sort);
     }
 
-    //회원 계정 삭제
+    /**
+     * 회원 계정 삭제
+     */
     @DeleteMapping("/users")
     public void deleteMember(@RequestBody String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Member not found"));

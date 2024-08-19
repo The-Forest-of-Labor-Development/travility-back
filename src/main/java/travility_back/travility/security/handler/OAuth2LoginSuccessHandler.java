@@ -15,7 +15,6 @@ import travility_back.travility.entity.RefreshToken;
 import travility_back.travility.repository.MemberRepository;
 import travility_back.travility.repository.RefreshTokenRepository;
 import travility_back.travility.security.jwt.JWTUtil;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,14 +54,18 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         response.sendRedirect("/loading"); // 프론트단
     }
 
-    //Refresh 토큰 DB 저장
+    /**
+     * Refresh 토큰 DB 저장
+     */
     private void addRefreshToken(String username, String refresh, Long expiredMs) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()-> new NoSuchElementException("Member not found"));
         RefreshToken refreshToken = new RefreshToken(refresh,expiredMs.toString(),member);
         refreshTokenRepository.save(refreshToken);
     }
 
-    // 쿠키 만드는 메서드
+    /**
+     * 쿠키 생성
+     */
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(604800); //일주일

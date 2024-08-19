@@ -11,7 +11,6 @@ import travility_back.travility.repository.AccountBookRepository;
 import travility_back.travility.repository.BudgetRepository;
 import travility_back.travility.repository.ExpenseRepository;
 import travility_back.travility.util.CalcUtil;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,9 @@ public class SettlementService {
     private final ExpenseRepository expenseRepository;
     private final BudgetRepository budgetRepository;
 
-    //정산용 가계부 조회
+    /**
+     * 정산용 가계부 조회
+     */
     @Transactional(readOnly = true)
     public AccountBookDTO getAccountBook(Long id) {
         AccountBook accountBook = accountBookRepository.findById(id).orElseThrow(()->new NoSuchElementException("AccountBook not found"));
@@ -33,7 +34,9 @@ public class SettlementService {
     }
 
 
-    //통화 코드별 공동 경비 합계 & 가중 평균 환율
+    /**
+     * 통화 코드별 공동 경비 합계 & 가중 평균 환율
+     */
     @Transactional(readOnly = true)
     public Map<String, Object> getTotalSharedExpensesAndExchangeRates(Long id) {
         //가계부 아이디를 가진 예산 목록 찾기
